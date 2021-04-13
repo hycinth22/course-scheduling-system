@@ -16,7 +16,6 @@ type Clazz struct {
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
 	// Foreign keys
 	Major *Major `orm:"column(major_id);rel(fk)" json:"major"`
-	// MajorID string `orm:"column(major_id)" json:"major_id"`
 }
 
 func AddClazz(c Clazz) error {

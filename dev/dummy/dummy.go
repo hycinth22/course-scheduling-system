@@ -9,14 +9,15 @@ import (
 )
 
 const (
-	dataDir        = "./dev/data/"
-	excelCourse    = dataDir + "/course.xls"
-	excelTeacher   = dataDir + "/teacher.xls"
-	excelInstruct  = dataDir + "/instruct.xls"
-	excelClazz     = dataDir + "/clazz.xls"
-	excelClazzroom = dataDir + "/clazzroom.xls"
-	excelTimespan  = dataDir + "/timespan.xls"
-	excelSemester  = dataDir + "/semester.xls"
+	dataDir              = "./dev/data/"
+	excelCourse          = dataDir + "/course.xls"
+	excelTeacher         = dataDir + "/teacher.xls"
+	excelInstruct        = dataDir + "/instruct.xls"
+	excelInstructedClazz = dataDir + "/instructed_clazz.xls"
+	excelClazz           = dataDir + "/clazz.xls"
+	excelClazzroom       = dataDir + "/clazzroom.xls"
+	excelTimespan        = dataDir + "/timespan.xls"
+	excelSemester        = dataDir + "/semester.xls"
 )
 
 func ParseCourse() []*models.Course {
@@ -40,6 +41,13 @@ func ParseInstruct() []*models.Instruct {
 		log.Println(err)
 	}
 	return excel.ParseInstructExcel(f)
+}
+func ParseInstructedClazz() []*models.InstructedClazz {
+	f, err := os.Open(excelInstructedClazz)
+	if err != nil {
+		log.Println(err)
+	}
+	return excel.ParseInstructedClazzExcel(f)
 }
 func ParseClazz() []*models.Clazz {
 	f, err := os.Open(excelClazz)

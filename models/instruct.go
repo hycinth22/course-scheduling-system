@@ -8,14 +8,12 @@ import (
 )
 
 type Instruct struct {
-	// Primary key
-	InstructId int       `orm:"column(instruct_id);pk;auto" json:"-"`
-	Teacher    *Teacher  `orm:"column(teacher_id);rel(fk)" json:"teacher"`
-	Course     *Course   `orm:"column(course_id);rel(fk)" json:"course"`
-	Semester   *Semester `orm:"column(semester_id);rel(fk);type(date)" json:"semester"`
-	//TeacherId  string `orm:"column(teacher_id);" json:"teacher_id"`
-	//CourseId   string `orm:"column(course_id);" json:"course_id"`
-	//SemesterId string `orm:"column(semester_id);" json:"semester_id"`
+	// Alt-Primary key
+	InstructId int `orm:"column(instruct_id);pk;auto" json:"-"`
+	// Foreign Primary key
+	Teacher  *Teacher  `orm:"column(teacher_id);rel(fk)" json:"teacher"`
+	Course   *Course   `orm:"column(course_id);rel(fk)" json:"course"`
+	Semester *Semester `orm:"column(semester_id);rel(fk);type(date)" json:"semester"`
 	// Attributes
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`

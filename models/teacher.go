@@ -18,7 +18,6 @@ type Teacher struct {
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
 	// Foreign
 	Dept *Department `orm:"column(dept_id);rel(fk)" json:"dept"`
-	// DeptID string `orm:"column(dept_id)" json:"dept_id"`
 }
 
 func AddTeacher(c Teacher) error {

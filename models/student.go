@@ -11,5 +11,4 @@ type Student struct {
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
 	// Foreign
 	Clazz *Clazz `orm:"column(clazz_id);rel(fk)" json:"clazz"`
-	// ClazzID string `orm:"column(clazz_id)" json:"clazz_id"`
 }

@@ -18,17 +18,11 @@ func init() {
 		panic(err)
 	}
 	// register model
-	orm.RegisterModel(new(Clazz))
 	orm.RegisterModel(new(Clazzroom))
-	orm.RegisterModel(new(College))
-	orm.RegisterModel(new(Course))
-	orm.RegisterModel(new(Department))
-	orm.RegisterModel(new(Instruct))
-	orm.RegisterModel(new(Major))
+	orm.RegisterModel(new(College), new(Department), new(Major), new(Clazz), new(Student))
+	orm.RegisterModel(new(Course), new(Teacher), new(Instruct), new(InstructedClazz))
 	orm.RegisterModel(new(Schedule), new(ScheduleItem))
 	orm.RegisterModel(new(Semester))
-	orm.RegisterModel(new(Student))
-	orm.RegisterModel(new(Teacher))
 	orm.RegisterModel(new(Timespan))
 	orm.BootStrap()
 	// create table

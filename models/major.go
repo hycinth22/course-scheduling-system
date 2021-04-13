@@ -13,5 +13,4 @@ type Major struct {
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
 	// Foreign
 	College *College `orm:"column(college_id);rel(fk)" json:"college"`
-	// CollegeID string  `orm:"column(college_id)" json:"college_id"`
 }

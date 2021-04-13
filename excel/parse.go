@@ -238,12 +238,52 @@ func ParseInstructExcel(reader io.Reader) (r []*models.Instruct) {
 		courseID := strings.TrimSpace(row[3])
 		// courseName := strings.TrimSpace(row[4])
 		// semesterName := strings.TrimSpace(row[5])
-		semsterDate := strings.TrimSpace(row[6])
+		semesterDate := strings.TrimSpace(row[6])
 		r = append(r, &models.Instruct{
 			InstructId: id,
 			Teacher:    &models.Teacher{Id: teacherID},
 			Course:     &models.Course{Id: courseID},
-			Semester:   &models.Semester{StartDate: semsterDate},
+			Semester:   &models.Semester{StartDate: semesterDate},
+		})
+	}
+	return
+}
+func ParseInstructedClazzExcel(reader io.Reader) (r []*models.InstructedClazz) {
+	rows, err := GetSheet1Rows(reader)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for i, row := range rows {
+		var err error
+		if i == 0 {
+			continue
+		}
+		if strings.TrimSpace(row[0]) == "" {
+			continue
+		}
+		id, err := strconv.Atoi(strings.TrimSpace(row[0]))
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		clazzID := strings.TrimSpace(row[1])
+		// clazzName := strings.TrimSpace(row[2])
+		instructID, err := strconv.Atoi(strings.TrimSpace(row[0]))
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		// teacherID := strings.TrimSpace(row[4])
+		// teacherName := strings.TrimSpace(row[5])
+		// courseID := strings.TrimSpace(row[6])
+		// courseName := strings.TrimSpace(row[7])
+		// semesterName := strings.TrimSpace(row[8])
+		// semesterDate := strings.TrimSpace(row[9])
+		r = append(r, &models.InstructedClazz{
+			Id:       id,
+			Clazz:    &models.Clazz{ClazzId: clazzID},
+			Instruct: &models.Instruct{InstructId: instructID},
 		})
 	}
 	return

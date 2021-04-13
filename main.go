@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/beego/beego/v2/server/web/filter/cors"
 
-	_ "courseSchduling/routers"
+	_ "courseScheduling/routers"
 
 	beego "github.com/beego/beego/v2/server/web"
 )

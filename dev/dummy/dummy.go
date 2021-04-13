@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"courseSchduling/excel"
-	"courseSchduling/models"
+	"courseScheduling/excel"
+	"courseScheduling/models"
 )
 
 const (

@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"courseSchduling/controllers"
+	"courseScheduling/controllers"
 	"github.com/beego/beego/v2/server/web"
 )
 

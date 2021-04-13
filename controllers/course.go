@@ -6,8 +6,8 @@ import (
 	"log"
 	"mime/multipart"
 
-	"courseSchduling/excel"
-	"courseSchduling/models"
+	"courseScheduling/excel"
+	"courseScheduling/models"
 
 	beego "github.com/beego/beego/v2/server/web"
 )

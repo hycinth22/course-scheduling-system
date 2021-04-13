@@ -1,8 +1,8 @@
 package main
 
 import (
-	"courseSchduling/dev/dummy"
-	"courseSchduling/models"
+	"courseScheduling/dev/dummy"
+	"courseScheduling/models"
 )
 
 func checkError(err error) {

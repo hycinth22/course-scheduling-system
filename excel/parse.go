@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"courseSchduling/models"
+	"courseScheduling/models"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )

@@ -3,8 +3,8 @@ package scheduling
 import (
 	"testing"
 
-	"courseSchduling/dev/dummy"
-	"courseSchduling/models"
+	"courseScheduling/dev/dummy"
+	"courseScheduling/models"
 )
 
 func TestNewSchedule(t *testing.T) {

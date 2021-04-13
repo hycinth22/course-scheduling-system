@@ -1,4 +1,4 @@
-module courseSchduling
+module courseScheduling
 
 go 1.15
 

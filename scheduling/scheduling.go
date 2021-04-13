@@ -3,7 +3,7 @@ package scheduling
 import (
 	"fmt"
 
-	"courseSchduling/models"
+	"courseScheduling/models"
 )
 
 func NewSchedule(allInstructs []*models.Instruct, allClazz []*models.Clazz, allClazzroom []*models.Clazzroom) []*models.ScheduleItem {

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -10,13 +11,18 @@ import (
 type Instruct struct {
 	// Alt-Primary key
 	InstructId int `orm:"column(instruct_id);pk;auto" json:"-"`
-	// Foreign Primary key
+	// Candidate key
 	Teacher  *Teacher  `orm:"column(teacher_id);rel(fk)" json:"teacher"`
 	Course   *Course   `orm:"column(course_id);rel(fk)" json:"course"`
 	Semester *Semester `orm:"column(semester_id);rel(fk);type(date)" json:"semester"`
 	// Attributes
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+}
+
+func (i Instruct) String() string {
+	return fmt.Sprintf("Instruct%d {Teacher:%s(%s) Course:%s Semester:%s(%s)}",
+		i.InstructId, i.Teacher.Id, i.Teacher.Name, i.Course, i.Semester.StartDate, i.Semester.Name)
 }
 
 func AddInstruct(c Instruct) error {

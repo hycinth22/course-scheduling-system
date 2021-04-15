@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -8,14 +9,46 @@ import (
 )
 
 type InstructedClazz struct {
-	// Alt-Primary key
+	// Primary key
 	Id int `orm:"column(id);pk;auto" json:"id"`
-	// Foreign Primary key
+	// Candidate key
 	Clazz    *Clazz    `orm:"column(clazz_id);rel(fk)" json:"clazz"`
 	Instruct *Instruct `orm:"column(instruct_id);rel(fk)" json:"instruct"`
 	// Attributes
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+}
+
+func (i InstructedClazz) String() string {
+	return fmt.Sprintf("InstructedClazz{Clazz:%s Instruct:%s}", i.Clazz, i.Instruct)
+}
+
+func AllInstructedClazzesForScheduling() ([]*InstructedClazz, error) {
+	var r []*InstructedClazz
+	o := orm.NewOrm()
+	num, err := o.QueryTable("instructed_clazz").All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	for i := range r {
+		err := o.Read(r[i].Instruct)
+		if err != nil {
+			return nil, err
+		}
+		err = o.Read(r[i].Instruct.Course)
+		if err != nil {
+			return nil, err
+		}
+		err = o.Read(r[i].Instruct.Teacher)
+		if err != nil {
+			return nil, err
+		}
+		err = o.Read(r[i].Clazz)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return r, err
 }
 
 func AddInstructedClazz(c InstructedClazz) error {
@@ -43,7 +76,7 @@ func TruncateInstructedClazz() error {
 }
 
 func ImportInstructedClazz(batch []*InstructedClazz) error {
-	err := TruncateInstruct()
+	err := TruncateInstructedClazz()
 	if err != nil {
 		return err
 	}

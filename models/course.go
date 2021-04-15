@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -19,6 +20,21 @@ type Course struct {
 	Founder        string    `orm:"column(course_founder);default('')" json:"founder"`
 	CreatedAt      time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt      time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+}
+
+func (c Course) String() string {
+	return fmt.Sprintf("Course%s(%s) {Lessons:%d LPW:%d Kind:%s ExamMode:%s Founder:%s}",
+		c.Id, c.Name, c.Lessons, c.LessonsPerWeek, c.Kind, c.ExamMode, c.Founder)
+}
+
+func AllCourses() ([]*Course, error) {
+	var r []*Course
+	o := orm.NewOrm()
+	num, err := o.QueryTable("course").All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
 }
 
 func ListCourses(offset, limit int) ([]*Course, int) {

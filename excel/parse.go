@@ -93,6 +93,13 @@ func ParseTimespanExcel(reader io.Reader) (r []*models.Timespan) {
 			log.Println(err)
 			continue
 		}
+		var priority int
+		pri := strings.TrimSpace(row[4])
+		if pri == "no" {
+			priority = 1
+		} else {
+			priority = 0
+		}
 		r = append(r, &models.Timespan{
 			Id:          id,
 			BeginHour:   beginTime.Hour(),
@@ -100,6 +107,7 @@ func ParseTimespanExcel(reader io.Reader) (r []*models.Timespan) {
 			EndHour:     endTime.Hour(),
 			EndMinute:   endTime.Minute(),
 			Length:      time.Duration(length.Hour())*time.Hour + time.Duration(length.Minute())*time.Minute,
+			Priority:    priority,
 		})
 	}
 	return
@@ -269,7 +277,7 @@ func ParseInstructedClazzExcel(reader io.Reader) (r []*models.InstructedClazz) {
 		}
 		clazzID := strings.TrimSpace(row[1])
 		// clazzName := strings.TrimSpace(row[2])
-		instructID, err := strconv.Atoi(strings.TrimSpace(row[0]))
+		instructID, err := strconv.Atoi(strings.TrimSpace(row[3]))
 		if err != nil {
 			log.Println(err)
 			continue

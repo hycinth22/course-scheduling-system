@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -14,8 +15,12 @@ type Clazz struct {
 	ClazzName string    `orm:"column(clazz_name)" json:"clazz_name"`
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
-	// Foreign keys
+	// Foreign
 	Major *Major `orm:"column(major_id);rel(fk)" json:"major"`
+}
+
+func (c Clazz) String() string {
+	return fmt.Sprintf("Clazz%s(%s)", c.ClazzId, c.ClazzName)
 }
 
 func AddClazz(c Clazz) error {

@@ -17,6 +17,16 @@ type Clazzroom struct {
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
 }
 
+func AllClazzroom() ([]*Clazzroom, error) {
+	var r []*Clazzroom
+	o := orm.NewOrm()
+	num, err := o.QueryTable("clazzroom").All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
+}
+
 func AddClazzroom(c Clazzroom) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(&c)

@@ -15,7 +15,18 @@ type Timespan struct {
 	BeginMinute int           `orm:"column(timespan_begin_m)" json:"timespan_begin_m"`
 	EndHour     int           `orm:"column(timespan_end_h)" json:"timespan_end_h"`
 	EndMinute   int           `orm:"column(timespan_end_m)" json:"timespan_end_m"`
+	Priority    int           `orm:"column(timespan_priority)" json:"timespan_priority"`
 	Length      time.Duration `orm:"column(timespan_length);type(bigint)" json:"timespan_length"`
+}
+
+func AllTimespan() ([]*Timespan, error) {
+	var r []*Timespan
+	o := orm.NewOrm()
+	num, err := o.QueryTable("timespan").All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
 }
 
 func AddOrUpdateTimespan(c *Timespan) error {

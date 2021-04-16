@@ -50,8 +50,8 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 		for cnt := 0; cnt < instructedClazz.Instruct.Course.LessonsPerWeek; cnt++ {
 			seq := placeSeq[k]
 			item := &models.ScheduleItem{
-				ScheduleItemId: 0,   // keep empty, filled by models package
-				ScheduleId:     nil, // keep empty, filled by models package
+				ScheduleItemId: 0, // keep empty, filled by models package
+				ScheduleId:     0, // keep empty, filled by models package
 				Instruct:       instructedClazz.Instruct,
 				Clazz:          instructedClazz.Clazz,
 				// filled by the algorithm

@@ -12,8 +12,8 @@ type InstructedClazz struct {
 	// Primary key
 	Id int `orm:"column(id);pk;auto" json:"id"`
 	// Candidate key
-	Clazz    *Clazz    `orm:"column(clazz_id);rel(fk)" json:"clazz"`
-	Instruct *Instruct `orm:"column(instruct_id);rel(fk)" json:"instruct"`
+	Clazz    *Clazz    `orm:"column(clazz_id);rel(fk);index" json:"clazz"`
+	Instruct *Instruct `orm:"column(instruct_id);rel(fk);index" json:"instruct"`
 	// Attributes
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
@@ -23,27 +23,34 @@ func (i InstructedClazz) String() string {
 	return fmt.Sprintf("InstructedClazz{Clazz:%s Instruct:%s}", i.Clazz, i.Instruct)
 }
 
-func AllInstructedClazzesForScheduling() ([]*InstructedClazz, error) {
+func AllInstructedClazzesForScheduling(semester *Semester) ([]*InstructedClazz, error) {
 	var r []*InstructedClazz
 	o := orm.NewOrm()
-	num, err := o.QueryTable("instructed_clazz").All(&r)
+	// .Filter("instruct__semester_id", semester.StartDate)
+	var instructs []int
+	_, err := o.Raw("SELECT instruct_id FROM instruct WHERE semester_id = ?", semester.StartDate).QueryRows(&instructs)
+	if err != nil {
+		log.Printf("Returned Rows: %v\n", err)
+		return nil, err
+	}
+	if len(instructs) == 0 {
+		return []*InstructedClazz{}, nil
+	}
+	num, err := o.QueryTable("instructed_clazz").Filter("instruct_id__in", instructs).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+		return nil, err
 	}
 	for i := range r {
-		err := o.Read(r[i].Instruct)
+		_, err := o.LoadRelated(r[i].Instruct, "course")
 		if err != nil {
 			return nil, err
 		}
-		err = o.Read(r[i].Instruct.Course)
+		_, err = o.LoadRelated(r[i].Instruct, "teacher")
 		if err != nil {
 			return nil, err
 		}
-		err = o.Read(r[i].Instruct.Teacher)
-		if err != nil {
-			return nil, err
-		}
-		err = o.Read(r[i].Clazz)
+		_, err = o.LoadRelated(r[i], "clazz")
 		if err != nil {
 			return nil, err
 		}

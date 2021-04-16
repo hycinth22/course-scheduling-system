@@ -11,10 +11,20 @@ type Semester struct {
 	// Primary key
 	StartDate string `orm:"column(start_date);type(date);pk" json:"start_date"`
 	// Attributes
-	Name      string    `orm:"column(semester_name);default('')" json:"semester_name"`
+	Name      string    `orm:"column(semester_name);default('');index" json:"semester_name"`
 	Weeks     int       `orm:"column(semester_weeks)" json:"semester_weeks"`
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+}
+
+func AllSemester() ([]*Semester, error) {
+	var r []*Semester
+	o := orm.NewOrm()
+	num, err := o.QueryTable("semester").All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
 }
 
 func AddSemester(c Semester) error {

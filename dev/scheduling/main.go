@@ -11,7 +11,8 @@ func main() {
 	// allCourses, err := models.AllCourses()
 	// allInstructs := dummy.ParseInstruct()
 	// allClazzes := dummy.ParseClazz()
-	allInstructedClazz, err := models.AllInstructedClazzesForScheduling()
+	s := &models.Semester{StartDate: "2021/9/6"}
+	allInstructedClazz, err := models.AllInstructedClazzesForScheduling(s)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -32,7 +33,9 @@ func main() {
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
 	})
-	for _, item := range result {
-		fmt.Printf("%v\n", item)
+	_, err = models.AddNewSchedule(s, result)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 }

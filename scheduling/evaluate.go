@@ -1,11 +1,23 @@
 package scheduling
 
 import (
+	"fmt"
 	"log"
-	"sort"
 
 	"github.com/montanaflynn/stats"
 )
+
+type ScoreHard [3]float64
+
+func (s ScoreHard) String() string {
+	return fmt.Sprintf("[%.4f %.4f %.4f]", s[0], s[1], s[2])
+}
+
+type ScoreSoft [3]float64
+
+func (s ScoreSoft) String() string {
+	return fmt.Sprintf("[%.4f %.4f %.4f]", s[0], s[1], s[2])
+}
 
 // Evaluate a Schedule
 func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
@@ -19,11 +31,10 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 		fit += 100000.0 * hardTotal
 	}
 	// ！！！软约束条件检测开始！！！
-	// 共900分
 	const (
-		softScoreMaxTotal = 900.0
-		softScoreMax1     = 350.0
-		softScoreMax2     = 350.0
+		softScoreMaxTotal = 1200.0 // 总共分数
+		softScoreMax1     = 550.0
+		softScoreMax2     = 450.0
 		softScoreMax3     = 200.0
 	)
 	softTotal := 0.0
@@ -54,42 +65,36 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	X.scores.s[0] = uniCostTimespan
 
 	// 2. 同一门课在一周内尽量分散
+	var maxDistance = float64(maxDayOfWeek * maxTimespan)
 	costSameICDensity := 0.0
-	var (
-		totalDistance = float64(maxDayOfWeek * maxTimespan)
-	)
+	var cnt = 0
 	for _, items := range X.queryByInstructedClazz {
 		var oneDensity = 0.0
 		if len(items) == 0 {
 			continue
 		}
 		if len(items) == 1 {
-			// 在长为totalDistance的线段上，任取两点的距离的数学期望为totalDistance/3
-			oneDensity += totalDistance / 3.0
+			// 在长为totalDistance的线段上，任取两点的距离的数学期望为1/3*maxDistance/
+			oneDensity += 1.0 - 1.0/3.0
 			continue
 		}
-		sort.Slice(items, func(i, j int) bool {
-			if items[i].DayOfWeek != items[j].DayOfWeek {
-				return items[i].DayOfWeek < items[j].DayOfWeek
-			}
-			return items[i].TimespanId < items[j].TimespanId
-		})
 		for i := 1; i < len(items); i++ {
 			theTime := (items[i].DayOfWeek-1)*maxTimespan + items[i].TimespanId
 			prevTime := (items[i-1].DayOfWeek-1)*maxTimespan + items[i-1].TimespanId
 			distance := theTime - prevTime
-			oneDensity += float64(distance)
+			oneDensity += 1.0 - float64(distance)/maxDistance
 		}
 		oneDensity /= float64(len(items))
 		costSameICDensity += oneDensity
+		cnt++
 	}
-	costSameICDensity /= float64(len(X.queryByInstructedClazz))
+	costSameICDensity /= float64(cnt)
 	// 归一化
 	var (
 		minSameICDensity = 0.0
 		maxSameICDensity = float64(maxDayOfWeek * maxTimespan)
 	)
-	uniSameICDensity := 1.0 - normalizeFloat64(costSameICDensity, minSameICDensity, maxSameICDensity)
+	uniSameICDensity := normalizeFloat64(costSameICDensity, minSameICDensity, maxSameICDensity)
 	// log.Println("uniSameICDensity:", uniSameICDensity)
 	softTotal += uniSameICDensity * softScoreMax2
 	X.scores.s[1] = uniSameICDensity

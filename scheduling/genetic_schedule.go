@@ -24,8 +24,8 @@ type GeneticSchedule struct {
 
 	scores struct {
 		invalidity float64
-		h          [3]float64
-		s          [3]float64
+		h          ScoreHard
+		s          ScoreSoft
 	}
 }
 
@@ -75,12 +75,12 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 		key := strconv.Itoa(item.Instruct.InstructId) + "_" + item.Clazz.ClazzId
 		queryByInstructedClazz[key] = append(queryByInstructedClazz[key], item)
 	}
-	for ic := range queryByInstructedClazz {
-		sort.Slice(queryByInstructedClazz[ic], func(i, j int) bool {
-			if queryByInstructedClazz[ic][i].DayOfWeek != queryByInstructedClazz[ic][j].DayOfWeek {
-				return queryByInstructedClazz[ic][i].DayOfWeek < queryByInstructedClazz[ic][j].DayOfWeek
+	for _, items := range queryByInstructedClazz {
+		sort.Slice(items, func(i, j int) bool {
+			if items[i].DayOfWeek != items[j].DayOfWeek {
+				return items[i].DayOfWeek < items[j].DayOfWeek
 			}
-			return queryByInstructedClazz[ic][i].TimespanId < queryByInstructedClazz[ic][j].TimespanId
+			return items[i].TimespanId < items[j].TimespanId
 		})
 	}
 	s := &GeneticSchedule{
@@ -111,6 +111,14 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 		queryByClazzroom[items[i].ClazzroomId] = append(queryByClazzroom[items[i].ClazzroomId], items[i])
 		key := strconv.Itoa(items[i].Instruct.InstructId) + "_" + items[i].Clazz.ClazzId
 		queryByInstructedClazz[key] = append(queryByInstructedClazz[key], items[i])
+	}
+	for _, items := range queryByInstructedClazz {
+		sort.Slice(items, func(i, j int) bool {
+			if items[i].DayOfWeek != items[j].DayOfWeek {
+				return items[i].DayOfWeek < items[j].DayOfWeek
+			}
+			return items[i].TimespanId < items[j].TimespanId
+		})
 	}
 	return &GeneticSchedule{
 		parent:                 X.parent,

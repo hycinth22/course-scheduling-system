@@ -1,7 +1,6 @@
 package scheduling
 
 import (
-	"fmt"
 	"log"
 	"math"
 	"math/rand"
@@ -48,7 +47,6 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	g.printParams()
 	config := eaopt.NewDefaultGAConfig()
 	config.NGenerations = Config.MaxGenerations
-	fmt.Printf("%#v", config.Model)
 	config.ParallelEval = true
 	config.Model = eaopt.ModMutationOnly{Strict: true}
 	timeout := time.NewTimer(Config.Timeout)
@@ -56,7 +54,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		LastFitness     = math.NaN()
 		LastFitnessKeep = 0
 	)
-	// Stop when fitness is unchanged (precision is as FitnessKeepPrecision) in 500 generations
+	// Stop when fitness is unchanged (precision is as FitnessJudgePrecision) in 500 generations
 	config.EarlyStop = func(ga *eaopt.GA) bool {
 		select {
 		case <-timeout.C:
@@ -72,7 +70,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		//}
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		fitness := ga.HallOfFame[0].Fitness
-		if bestCandidate.Invalidity() == 0.0 && math.Abs(fitness-LastFitness) < Config.FitnessKeepPrecision {
+		if bestCandidate.Invalidity() == 0.0 && math.Abs(fitness-LastFitness) < Config.FitnessJudgePrecision {
 			LastFitnessKeep++
 		} else {
 			LastFitness = fitness
@@ -84,12 +82,16 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 				log.Println(err)
 				return
 			}
-			log.Printf("%d) Result -> \n\n Invalidity:%f h:%+v \n s:%+v\n Fitness:%f\n",
+			invalidity := bestCandidate.Invalidity()
+
+			log.Printf("%d) Result -> \n"+
+				"h:%+v s:%+v\n "+
+				"Invalidity:%.0f HowBad:%f\n",
 				ga.Generations,
 				// bestCandidate,
-				bestCandidate.Invalidity(), bestCandidate.scores.h,
+				bestCandidate.scores.h,
 				bestCandidate.scores.s,
-				ga.HallOfFame[0].Fitness)
+				invalidity, ga.HallOfFame[0].Fitness)
 		}
 	}
 	var ga, err = config.NewGA()
@@ -116,12 +118,15 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		log.Printf("We find an invalid solution after %d generations in %s\n", ga.Generations, ga.Age)
 		return nil
 	}
-	log.Printf("FINAL %d) Result -> \n%s\n Invalidity:%f h:%+v \n s:%+v\n Fitness:%f\n",
+	log.Printf("FINAL %d) Result -> \n"+
+		"%v \n"+
+		"h:%+v s:%+v\n "+
+		"Invalidity:%.0f HowBad:%f\n",
 		ga.Generations,
 		result,
-		result.Invalidity(), result.scores.h,
+		result.scores.h,
 		result.scores.s,
-		ga.HallOfFame[0].Fitness)
+		result.Invalidity(), ga.HallOfFame[0].Fitness)
 	log.Printf("Optimal solution obtained after %d generations in %s\n", ga.Generations, ga.Age)
 	return result
 }

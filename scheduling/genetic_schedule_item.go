@@ -54,15 +54,11 @@ func (s GeneticScheduleItemCollection) Copy() eaopt.Slice {
 	for i := range t {
 		// and deep copy all elements in the slice
 		t[i] = &models.ScheduleItem{
-			ScheduleItemId: t[i].ScheduleItemId,
-			ScheduleId:     t[i].ScheduleId,
-			Instruct:       t[i].Instruct,
-			Clazz:          t[i].Clazz,
-			ClazzroomId:    t[i].ClazzroomId,
-			TimespanId:     t[i].TimespanId,
-			DayOfWeek:      t[i].DayOfWeek,
-			CreatedAt:      t[i].CreatedAt,
-			UpdatedAt:      t[i].UpdatedAt,
+			Instruct:    t[i].Instruct,
+			Clazz:       t[i].Clazz,
+			ClazzroomId: t[i].ClazzroomId,
+			TimespanId:  t[i].TimespanId,
+			DayOfWeek:   t[i].DayOfWeek,
 		}
 	}
 	return t

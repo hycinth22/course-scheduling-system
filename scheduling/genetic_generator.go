@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"math/rand"
+	"sync"
 	"time"
 
 	"courseScheduling/models"
@@ -17,6 +18,8 @@ type Generator struct {
 	cntLessons   int
 	allPlacement []placement
 	timespanMap  map[int]*models.Timespan
+
+	p *sync.Pool
 }
 
 func NewGenerator(params *Params) *Generator {
@@ -29,6 +32,12 @@ func NewGenerator(params *Params) *Generator {
 	g.timespanMap = make(map[int]*models.Timespan, len(g.params.AllTimespan))
 	for i := range g.params.AllTimespan {
 		g.timespanMap[g.params.AllTimespan[i].Id] = g.params.AllTimespan[i]
+	}
+	// g.p = NewSyncPool(1, g.cntLessons, 100)
+	g.p = &sync.Pool{
+		New: func() interface{} {
+			return make([]interface{}, 0, g.cntLessons)
+		},
 	}
 	return g
 }

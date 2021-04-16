@@ -64,8 +64,8 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 		}
 	}
 	// generate index
-	queryByTeacher := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz)/2)
-	queryByClazz := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz)/3)
+	queryByTeacher := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz))
+	queryByClazz := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz))
 	queryByClazzroom := make(map[int][]*models.ScheduleItem, len(g.params.AllClazzroom))
 	queryByInstructedClazz := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz))
 	for _, item := range scheduleItems {

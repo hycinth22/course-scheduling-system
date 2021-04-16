@@ -13,3 +13,7 @@ func normalizeFloat64(x, min, max float64) float64 {
 	}
 	return (x - min) / (max - min)
 }
+
+type pair struct {
+	first, second interface{}
+}

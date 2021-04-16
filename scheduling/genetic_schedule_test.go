@@ -12,7 +12,7 @@ var testParams = &Params{}
 
 func init() {
 	var err error
-	testParams.AllInstructedClazz, err = models.AllInstructedClazzesForScheduling()
+	testParams.AllInstructedClazz, err = models.AllInstructedClazzesForScheduling(&models.Semester{StartDate: "2021/9/6"})
 	if err != nil {
 		panic(err)
 		return

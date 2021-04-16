@@ -26,7 +26,6 @@ func (i InstructedClazz) String() string {
 func AllInstructedClazzesForScheduling(semester *Semester) ([]*InstructedClazz, error) {
 	var r []*InstructedClazz
 	o := orm.NewOrm()
-	// .Filter("instruct__semester_id", semester.StartDate)
 	var instructs []int
 	_, err := o.Raw("SELECT instruct_id FROM instruct WHERE semester_id = ?", semester.StartDate).QueryRows(&instructs)
 	if err != nil {
@@ -42,7 +41,11 @@ func AllInstructedClazzesForScheduling(semester *Semester) ([]*InstructedClazz, 
 		return nil, err
 	}
 	for i := range r {
-		_, err := o.LoadRelated(r[i].Instruct, "course")
+		_, err := o.LoadRelated(r[i], "instruct")
+		if err != nil {
+			return nil, err
+		}
+		_, err = o.LoadRelated(r[i].Instruct, "course")
 		if err != nil {
 			return nil, err
 		}

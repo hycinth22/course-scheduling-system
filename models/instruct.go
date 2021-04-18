@@ -16,8 +16,8 @@ type Instruct struct {
 	Course   *Course   `orm:"column(course_id);rel(fk);index" json:"course"`
 	Semester *Semester `orm:"column(semester_id);type(date);rel(fk);index" json:"semester"`
 	// Attributes
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 }
 
 func (i Instruct) String() string {

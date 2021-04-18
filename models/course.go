@@ -18,8 +18,8 @@ type Course struct {
 	Kind           string    `orm:"column(course_kind);default('')" json:"kind"`
 	ExamMode       string    `orm:"column(course_exam_mode);default('')" json:"exam_mode"`
 	Founder        string    `orm:"column(course_founder);default('')" json:"founder"`
-	CreatedAt      time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt      time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt      time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt      time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 }
 
 func (c Course) String() string {
@@ -61,10 +61,12 @@ func SearchCourses(offset, limit int, search string) ([]*Course, int) {
 	num, err := o.QueryTable("course").SetCond(cond).Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+		return nil, 0
 	}
 	cnt, err := o.QueryTable("course").SetCond(cond).Count()
 	if err != nil {
 		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+		return nil, 0
 	}
 	return r, int(cnt)
 }

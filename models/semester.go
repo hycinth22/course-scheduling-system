@@ -13,8 +13,8 @@ type Semester struct {
 	// Attributes
 	Name      string    `orm:"column(semester_name);default('');index" json:"semester_name"`
 	Weeks     int       `orm:"column(semester_weeks)" json:"semester_weeks"`
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 }
 
 func AllSemester() ([]*Semester, error) {

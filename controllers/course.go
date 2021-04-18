@@ -16,11 +16,11 @@ type CourseController struct {
 	beego.Controller
 }
 
-// @Title CreatCourse
-// @Description
-// @Param	body		body 	models.Course	true		"body for Course content"
+// @Title CourseCreate
+// @Description create a new Course
+// @Param	body	body 	models.Course	true		"the course body"
 // @Success 200 {int} models.Course.Id
-// @Failure 400 body is empty
+// @Failure 400 invalid parameters
 // @router / [post]
 func (tC *CourseController) Post() {
 	var c models.Course
@@ -47,8 +47,9 @@ func (tC *CourseController) Post() {
 	}
 }
 
-// @Title ImportFromExcel
-// @Description get all Course
+// @Title CourseImportFromExcel
+// @Description import Courses from excel
+// @Param	excel   formData    models.Course   true    "the excel file"
 // @Success 200 {int} models.Course.Id
 // @Failure 500 import failed
 // @router /excel [post]
@@ -76,9 +77,9 @@ func (tC *CourseController) ImportFromExcel() {
 	}
 }
 
-// @Title GetAll
-// @Description get all Courses
-// @Success 200 {object} models.Course
+// @Title CourseGetAll
+// @Description Get all Courses
+// @Success 200 {object} []models.Course
 // @router / [get]
 func (tC *CourseController) GetAll() {
 	var query struct {
@@ -111,7 +112,7 @@ func (tC *CourseController) GetAll() {
 
 // @Title Get
 // @Description get Course by cid
-// @Param	uid		path 	string	true		"The key for staticblock"
+// @Param	cid	 path   string  true    "course id"
 // @Success 200 {object} models.Course
 // @Failure 403 :cid is empty
 // @router /:cid [get]
@@ -133,7 +134,6 @@ func (tC *CourseController) Get() {
 }
 
 // @Title Update
-// @Description update the Course
 // @Param	cid		path 	string	true		"The cid you want to update"
 // @Param	body		body 	models.Course	true		"body for Course content"
 // @Success 200 {object} models.Course
@@ -165,10 +165,8 @@ func (tC *CourseController) Put() {
 }
 
 // @Title Delete
-// @Description delete the Course
-// @Param	cid		path 	string	true		"The cid you want to delete"
+// @Param	cid path    string  true    "the deleted course id"
 // @Success 200 {string} delete success!
-// @Failure 403 cid is empty
 // @router /:cid [delete]
 func (tC *CourseController) Delete() {
 	cid := tC.GetString(":cid")

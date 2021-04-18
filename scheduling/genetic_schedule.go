@@ -55,9 +55,9 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 				Instruct:       instructedClazz.Instruct,
 				Clazz:          instructedClazz.Clazz,
 				// filled by the algorithm
-				ClazzroomId: g.allPlacement[seq].loc,
-				TimespanId:  g.allPlacement[seq].timespan,
-				DayOfWeek:   g.allPlacement[seq].dayOfWeek,
+				Clazzroom:  &models.Clazzroom{Id: g.allPlacement[seq].loc},
+				TimespanId: g.allPlacement[seq].timespan,
+				DayOfWeek:  g.allPlacement[seq].dayOfWeek,
 			}
 			scheduleItems = append(scheduleItems, item)
 			k++
@@ -71,7 +71,7 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 	for _, item := range scheduleItems {
 		queryByTeacher[item.Instruct.Teacher.Id] = append(queryByTeacher[item.Instruct.Teacher.Id], item)
 		queryByClazz[item.Clazz.ClazzId] = append(queryByClazz[item.Clazz.ClazzId], item)
-		queryByClazzroom[item.ClazzroomId] = append(queryByClazzroom[item.ClazzroomId], item)
+		queryByClazzroom[item.Clazzroom.Id] = append(queryByClazzroom[item.Clazzroom.Id], item)
 		key := strconv.Itoa(item.Instruct.InstructId) + "_" + item.Clazz.ClazzId
 		queryByInstructedClazz[key] = append(queryByInstructedClazz[key], item)
 	}
@@ -108,7 +108,7 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 	for i := range items {
 		queryByTeacher[items[i].Instruct.Teacher.Id] = append(queryByTeacher[items[i].Instruct.Teacher.Id], items[i])
 		queryByClazz[items[i].Clazz.ClazzId] = append(queryByClazz[items[i].Clazz.ClazzId], items[i])
-		queryByClazzroom[items[i].ClazzroomId] = append(queryByClazzroom[items[i].ClazzroomId], items[i])
+		queryByClazzroom[items[i].Clazzroom.Id] = append(queryByClazzroom[items[i].Clazzroom.Id], items[i])
 		key := strconv.Itoa(items[i].Instruct.InstructId) + "_" + items[i].Clazz.ClazzId
 		queryByInstructedClazz[key] = append(queryByInstructedClazz[key], items[i])
 	}

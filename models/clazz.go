@@ -13,10 +13,10 @@ type Clazz struct {
 	ClazzId string `orm:"column(clazz_id);pk" json:"clazz_id"`
 	// Attributes
 	ClazzName string    `orm:"column(clazz_name)" json:"clazz_name"`
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 	// Foreign
-	Major *Major `orm:"column(major_id);rel(fk)" json:"major"`
+	College *College `orm:"column(college_id);rel(fk)" json:"college"`
 }
 
 func (c Clazz) String() string {
@@ -58,4 +58,23 @@ func ImportClazz(batch []*Clazz) error {
 		}
 	}
 	return nil
+}
+
+func AllClazz() ([]*Clazz, error) {
+	var r []*Clazz
+	o := orm.NewOrm()
+	num, err := o.QueryTable("clazz").All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
+}
+
+func AllClazzesInColleges(coll *College) (r []*Clazz, err error) {
+	o := orm.NewOrm()
+	num, err := o.QueryTable("clazz").Filter("college_id", coll.Id).All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
 }

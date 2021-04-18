@@ -15,8 +15,8 @@ type InstructedClazz struct {
 	Clazz    *Clazz    `orm:"column(clazz_id);rel(fk);index" json:"clazz"`
 	Instruct *Instruct `orm:"column(instruct_id);rel(fk);index" json:"instruct"`
 	// Attributes
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 }
 
 func (i InstructedClazz) String() string {

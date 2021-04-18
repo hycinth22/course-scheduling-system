@@ -13,8 +13,8 @@ type Clazzroom struct {
 	// Attributes
 	Building  string    `orm:"column(building);" json:"building"`
 	Room      string    `orm:"column(room);" json:"room"`
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 }
 
 func AllClazzroom() ([]*Clazzroom, error) {

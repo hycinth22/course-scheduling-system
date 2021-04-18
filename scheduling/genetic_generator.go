@@ -70,7 +70,19 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		//}
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		fitness := ga.HallOfFame[0].Fitness
-		if bestCandidate.Invalidity() == 0.0 && math.Abs(fitness-LastFitness) < Config.FitnessJudgePrecision {
+		invalid := bestCandidate.Invalidity()
+		if invalid == 0.0 {
+			ga.Model = &eaopt.ModDownToSize{
+				NOffsprings: 101,
+				SelectorA:   eaopt.SelTournament{5},
+				SelectorB:   eaopt.SelElitism{},
+				MutRate:     0.9,
+				CrossRate:   0.01,
+			}
+		} else {
+			ga.Model = &eaopt.ModMutationOnly{Strict: true}
+		}
+		if invalid == 0.0 && math.Abs(fitness-LastFitness) < Config.FitnessJudgePrecision {
 			LastFitnessKeep++
 		} else {
 			LastFitness = fitness

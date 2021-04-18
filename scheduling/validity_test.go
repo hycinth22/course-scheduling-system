@@ -9,7 +9,7 @@ import (
 )
 
 func BenchmarkGeneticschedule_Invalidity(b *testing.B) {
-	allInstructedClazz, err := models.AllInstructedClazzesForScheduling()
+	allInstructedClazz, err := models.AllInstructedClazzesForScheduling(testSemester)
 	if err != nil {
 		b.FailNow()
 		return

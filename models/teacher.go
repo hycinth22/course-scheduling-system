@@ -14,8 +14,8 @@ type Teacher struct {
 	Name      string    `orm:"column(teacher_name);" json:"teacher_name"`
 	Title     string    `orm:"column(teacher_title);" json:"teacher_title"`
 	Tel       string    `orm:"column(teacher_tel);" json:"teacher_tel"`
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)"`
+	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
+	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 	// Foreign
 	Dept *Department `orm:"column(dept_id);rel(fk)" json:"dept"`
 }

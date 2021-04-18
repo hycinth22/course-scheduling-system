@@ -6,8 +6,10 @@ import (
 	"courseScheduling/models"
 )
 
+var testSemester = &models.Semester{StartDate: "2021/3/1"}
+
 func TestGenerator_GenerateSchedule(t *testing.T) {
-	allInstructedClazz, err := models.AllInstructedClazzesForScheduling()
+	allInstructedClazz, err := models.AllInstructedClazzesForScheduling(testSemester)
 	if err != nil {
 		t.Error(err)
 		return

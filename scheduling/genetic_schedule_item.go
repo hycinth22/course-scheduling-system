@@ -16,7 +16,7 @@ func (s GeneticScheduleItemCollection) At(i int) interface{} {
 func (s GeneticScheduleItemCollection) Set(i int, v interface{}) {
 	value := v.(*models.ScheduleItem)
 	s[i].TimespanId = value.TimespanId
-	s[i].ClazzroomId = value.ClazzroomId
+	s[i].Clazzroom.Id = value.Clazzroom.Id
 	// s[i] = v.(*models.ScheduleItem)
 }
 
@@ -26,7 +26,7 @@ func (s GeneticScheduleItemCollection) Len() int {
 
 func (s GeneticScheduleItemCollection) Swap(i, j int) {
 	s[i].TimespanId, s[j].TimespanId = s[j].TimespanId, s[i].TimespanId
-	s[i].ClazzroomId, s[j].ClazzroomId = s[j].ClazzroomId, s[i].ClazzroomId
+	s[i].Clazzroom.Id, s[j].Clazzroom.Id = s[j].Clazzroom.Id, s[i].Clazzroom.Id
 	// log.Println("swap ", i , j, s[i].TimespanId, s[j].TimespanId , s[j].TimespanId, s[i].TimespanId)
 	//log.Println("swap Instruct", s[i].Instruct.InstructId, s[j].Instruct.InstructId)
 	// s[i], s[j] = s[j], s[i]
@@ -54,11 +54,11 @@ func (s GeneticScheduleItemCollection) Copy() eaopt.Slice {
 	for i := range t {
 		// and deep copy all elements in the slice
 		t[i] = &models.ScheduleItem{
-			Instruct:    t[i].Instruct,
-			Clazz:       t[i].Clazz,
-			ClazzroomId: t[i].ClazzroomId,
-			TimespanId:  t[i].TimespanId,
-			DayOfWeek:   t[i].DayOfWeek,
+			Instruct:   t[i].Instruct,
+			Clazz:      t[i].Clazz,
+			Clazzroom:  &models.Clazzroom{Id: t[i].Clazzroom.Id},
+			TimespanId: t[i].TimespanId,
+			DayOfWeek:  t[i].DayOfWeek,
 		}
 	}
 	return t

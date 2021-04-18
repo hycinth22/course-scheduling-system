@@ -19,7 +19,7 @@ func init() {
 	}
 	// register model
 	orm.RegisterModel(new(Clazzroom))
-	orm.RegisterModel(new(College), new(Department), new(Major), new(Clazz), new(Student))
+	orm.RegisterModel(new(College), new(Department), new(Clazz), new(Student))
 	orm.RegisterModel(new(Course), new(Teacher), new(Instruct), new(InstructedClazz))
 	orm.RegisterModel(new(Schedule), new(ScheduleItem))
 	orm.RegisterModel(new(Semester))

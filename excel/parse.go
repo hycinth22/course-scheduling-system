@@ -42,11 +42,13 @@ func ParseCourseExcel(reader io.Reader) (r []*models.Course) {
 			log.Println(err)
 			continue
 		}
+		lessons /= 2
 		lpw, err := strconv.Atoi(strings.TrimSpace(row[8]))
 		if err != nil {
 			log.Println(err)
 			continue
 		}
+		lpw /= 2
 		r = append(r, &models.Course{
 			Id:             row[2],
 			Name:           row[3],
@@ -54,6 +56,7 @@ func ParseCourseExcel(reader io.Reader) (r []*models.Course) {
 			LessonsPerWeek: lpw,
 			ExamMode:       row[6],
 			Founder:        row[7],
+			Kind:           row[9],
 		})
 	}
 	return
@@ -182,11 +185,11 @@ func ParseClazzExcel(reader io.Reader) (r []*models.Clazz) {
 		}
 		id := strings.TrimSpace(row[0])
 		name := strings.TrimSpace(row[1])
-		majorid := strings.TrimSpace(row[2])
+		colID := strings.TrimSpace(row[2])
 		r = append(r, &models.Clazz{
 			ClazzId:   id,
 			ClazzName: name,
-			Major:     &models.Major{MajorId: majorid},
+			College:   &models.College{Id: colID},
 		})
 	}
 	return
@@ -292,6 +295,29 @@ func ParseInstructedClazzExcel(reader io.Reader) (r []*models.InstructedClazz) {
 			Id:       id,
 			Clazz:    &models.Clazz{ClazzId: clazzID},
 			Instruct: &models.Instruct{InstructId: instructID},
+		})
+	}
+	return
+}
+
+func ParseCollegeExcel(reader io.Reader) (r []*models.College) {
+	rows, err := GetSheet1Rows(reader)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for i, row := range rows {
+		if i == 0 {
+			continue
+		}
+		if strings.TrimSpace(row[0]) == "" {
+			continue
+		}
+		id := strings.TrimSpace(row[0])
+		name := strings.TrimSpace(row[1])
+		r = append(r, &models.College{
+			Id:   id,
+			Name: name,
 		})
 	}
 	return

@@ -16,6 +16,6 @@ func init() {
 		MaxGenerations:        10e9,
 		Timeout:               60 * time.Second,
 		StopWhenFitnessKeep:   100,
-		FitnessJudgePrecision: 1.0,
+		FitnessJudgePrecision: 0.01,
 	}
 }

@@ -31,3 +31,32 @@ func TestGenerator_GenerateSchedule(t *testing.T) {
 	})
 	g.GenerateSchedule()
 }
+
+func BenchmarkGenerator_GenerateSchedule(b *testing.B) {
+	allInstructedClazz, err := models.AllInstructedClazzesForScheduling(testSemester)
+	if err != nil {
+		b.Error(err)
+		b.FailNow()
+	}
+	allClazzroom, err := models.AllClazzroom()
+	if err != nil {
+		b.Error(err)
+		b.FailNow()
+	}
+	allTimespan, err := models.AllTimespan()
+	if err != nil {
+		b.Error(err)
+		b.FailNow()
+	}
+	g := NewGenerator(&Params{
+		AllInstructedClazz: allInstructedClazz,
+		AllClazzroom:       allClazzroom,
+		AllTimespan:        allTimespan,
+	})
+	b.ResetTimer()
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		_ = g.GenerateSchedule()
+	}
+	b.StopTimer()
+}

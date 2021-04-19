@@ -56,6 +56,19 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	)
 	// Stop when fitness is unchanged (precision is as FitnessJudgePrecision) in 500 generations
 	config.EarlyStop = func(ga *eaopt.GA) bool {
+		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
+		invalid := bestCandidate.Invalidity()
+		if invalid == 0.0 {
+			ga.Model = &eaopt.ModDownToSize{
+				NOffsprings: 101,
+				SelectorA:   eaopt.SelTournament{5},
+				SelectorB:   eaopt.SelElitism{},
+				MutRate:     0.9,
+				CrossRate:   0.01,
+			}
+		} else {
+			ga.Model = &eaopt.ModMutationOnly{Strict: true}
+		}
 		select {
 		case <-timeout.C:
 			return true
@@ -71,17 +84,6 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		fitness := ga.HallOfFame[0].Fitness
 		invalid := bestCandidate.Invalidity()
-		if invalid == 0.0 {
-			ga.Model = &eaopt.ModDownToSize{
-				NOffsprings: 101,
-				SelectorA:   eaopt.SelTournament{5},
-				SelectorB:   eaopt.SelElitism{},
-				MutRate:     0.9,
-				CrossRate:   0.01,
-			}
-		} else {
-			ga.Model = &eaopt.ModMutationOnly{Strict: true}
-		}
 		if invalid == 0.0 && math.Abs(fitness-LastFitness) < Config.FitnessJudgePrecision {
 			LastFitnessKeep++
 		} else {

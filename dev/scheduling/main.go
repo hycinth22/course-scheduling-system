@@ -28,14 +28,16 @@ func main() {
 		return
 	}
 	//log.SetOutput(f)
-	result := scheduling.GenerateSchedule(&scheduling.Params{
-		AllInstructedClazz: allInstructedClazz,
-		AllClazzroom:       allClazzroom,
-		AllTimespan:        allTimespan,
-	})
-	_, err = models.AddNewSchedule(s, result, len(allTimespan))
-	if err != nil {
-		fmt.Println(err)
-		return
+	for i := 0; i < 100; i++ {
+		result := scheduling.GenerateSchedule(&scheduling.Params{
+			AllInstructedClazz: allInstructedClazz,
+			AllClazzroom:       allClazzroom,
+			AllTimespan:        allTimespan,
+		})
+		_, err = models.AddNewSchedule(s, result, len(allTimespan))
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 }

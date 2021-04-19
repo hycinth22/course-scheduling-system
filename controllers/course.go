@@ -22,7 +22,7 @@ type CourseController struct {
 // @Success 200 {int} models.Course.Id
 // @Failure 400 invalid parameters
 // @router / [post]
-func (tC *CourseController) Post() {
+func (tC *CourseController) Create() {
 	var c models.Course
 	err := json.Unmarshal(tC.Ctx.Input.RequestBody, &tC)
 	if err != nil {
@@ -49,8 +49,8 @@ func (tC *CourseController) Post() {
 
 // @Title CourseImportFromExcel
 // @Description import Courses from excel
-// @Param	excel   formData    models.Course   true    "the excel file"
-// @Success 200 {int} models.Course.Id
+// @Param	excel   formData    file   true    "the excel file"
+// @Success 200 {string} ""
 // @Failure 500 import failed
 // @router /excel [post]
 func (tC *CourseController) ImportFromExcel() {
@@ -78,8 +78,11 @@ func (tC *CourseController) ImportFromExcel() {
 }
 
 // @Title CourseGetAll
+// @Param	search	     query   string  true    "search key"
+// @Param	pageIndex	 query   int    true    ""
+// @Param	pageSize	 query   int     true    ""
 // @Description Get all Courses
-// @Success 200 {object} []models.Course
+// @Success 200 {array} models.Course
 // @router / [get]
 func (tC *CourseController) GetAll() {
 	var query struct {

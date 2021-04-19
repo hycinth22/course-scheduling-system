@@ -12,6 +12,7 @@ import (
 func init() {
 	admin := web.NewNamespace("/admin",
 		web.NSNamespace("/clazz", web.NSInclude(&controllers.ClazzController{})),
+		web.NSNamespace("/clazzroom", web.NSInclude(&controllers.ClazzroomController{})),
 		web.NSNamespace("/college", web.NSInclude(&controllers.CollegeController{})),
 		web.NSNamespace("/course", web.NSInclude(&controllers.CourseController{})),
 		web.NSNamespace("/dept", web.NSInclude(&controllers.DepartmentController{})),

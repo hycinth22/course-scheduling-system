@@ -30,7 +30,7 @@ func AllDepartmentsInColleges(coll *College) (r []*Department, err error) {
 func ListDepartments(offset, limit int) ([]*Department, int) {
 	var r []*Department
 	o := orm.NewOrm()
-	num, err := o.QueryTable("department").Offset(offset).Limit(limit).All(&r)
+	num, err := o.QueryTable("department").RelatedSel().Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
 	}
@@ -58,6 +58,40 @@ func SearchDepartments(offset, limit int, search string) ([]*Department, int) {
 		return nil, 0
 	}
 	return r, int(cnt)
+}
+
+func GetDepartment(id string) (*Department, error) {
+	c := &Department{DeptId: id}
+	o := orm.NewOrm()
+	err := o.Read(c)
+	if err != nil {
+		log.Printf("GetDepartment Err: %d, %v\n", err)
+	}
+	return c, err
+}
+
+func AddDepartment(c *Department) error {
+	o := orm.NewOrm()
+	_, err := o.Insert(c)
+	if err != nil {
+		log.Printf("AddDepartment %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateDepartment(c *Department) error {
+	o := orm.NewOrm()
+	_, err := o.Update(c)
+	log.Printf("UpdateDepartment %v\n", err)
+	return err
+}
+
+func DelDepartment(c *Department) error {
+	o := orm.NewOrm()
+	_, err := o.Delete(c)
+	log.Printf("DelDepartment %v\n", err)
+	return err
 }
 
 func AddOrUpdateDepartment(c *Department) error {

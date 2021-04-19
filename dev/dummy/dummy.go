@@ -19,6 +19,7 @@ const (
 	excelTimespan        = dataDir + "/timespan.xls"
 	excelSemester        = dataDir + "/semester.xls"
 	excelCollege         = dataDir + "/college.xls"
+	excelDepartment      = dataDir + "/department.xls"
 )
 
 func ParseCourse() []*models.Course {
@@ -84,4 +85,11 @@ func ParseCollege() []*models.College {
 		log.Println(err)
 	}
 	return excel.ParseCollegeExcel(f)
+}
+func ParseDepartments() []*models.Department {
+	f, err := os.Open(excelDepartment)
+	if err != nil {
+		log.Println(err)
+	}
+	return excel.ParseDepartmentExcel(f)
 }

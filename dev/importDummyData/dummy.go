@@ -21,4 +21,5 @@ func main() {
 	checkError(models.ImportTimespan(dummy.ParseTimespan()))
 	checkError(models.ImportSemester(dummy.ParseSemester()))
 	checkError(models.ImportColleges(dummy.ParseCollege()))
+	checkError(models.ImportDepartments(dummy.ParseDepartments()))
 }

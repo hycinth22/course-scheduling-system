@@ -322,3 +322,29 @@ func ParseCollegeExcel(reader io.Reader) (r []*models.College) {
 	}
 	return
 }
+
+func ParseDepartmentExcel(reader io.Reader) (r []*models.Department) {
+	rows, err := GetSheet1Rows(reader)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	for i, row := range rows {
+		if i == 0 {
+			continue
+		}
+		if strings.TrimSpace(row[0]) == "" {
+			continue
+		}
+		id := strings.TrimSpace(row[0])
+		name := strings.TrimSpace(row[1])
+		collegeName := strings.TrimSpace(row[2])
+		college := strings.TrimSpace(row[3])
+		r = append(r, &models.Department{
+			DeptId:   id,
+			DeptName: name,
+			College:  &models.College{Id: college, Name: collegeName},
+		})
+	}
+	return
+}

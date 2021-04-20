@@ -127,6 +127,9 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		log.Printf("We fail to find a solution after %d generations in %s\n", ga.Generations, ga.Age)
 		return nil
 	}
+	if !ga.HallOfFame.IsSortedByFitness() {
+		ga.HallOfFame.SortByFitness()
+	}
 	result = ga.HallOfFame[0].Genome.(*GeneticSchedule)
 	if result.Invalidity() != 0.0 {
 		log.Printf("We find an invalid solution after %d generations in %s\n", ga.Generations, ga.Age)

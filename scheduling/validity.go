@@ -1,9 +1,5 @@
 package scheduling
 
-import (
-	"math/rand"
-)
-
 func (X *GeneticSchedule) Invalidity() (total float64) {
 	pool := X.parent.p
 	// 一个老师在同一时间只能安排一门课程
@@ -58,13 +54,4 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 	}
 	X.scores.h[2] = cnt2
 	return cnt0 + cnt1 + cnt2
-}
-
-func createShuffleIntSeq(n int, raw []int, rng *rand.Rand) (result []int) {
-	copy(result, raw)
-	rng.Shuffle(len(result), func(i, j int) {
-		result[i], result[j] = result[j], result[i]
-	})
-	result = result[:n]
-	return
 }

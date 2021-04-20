@@ -35,15 +35,10 @@ func (s *GeneticSchedule) String() string {
 
 // MakeGeneticSchedule creates a random GeneticSchedule
 func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
+	cntNeedToAlloc := g.cntLessons
 	var scheduleItems GeneticScheduleItemCollection
 	// generate placements
-	placeSeq := make([]int, len(g.allPlacement))
-	for i := range g.allPlacement {
-		placeSeq[i] = i
-	}
-	rng.Shuffle(len(placeSeq), func(i, j int) {
-		placeSeq[i], placeSeq[j] = placeSeq[j], placeSeq[i]
-	})
+	placeSeq := randomInts(uint(cntNeedToAlloc), 0, len(g.allPlacement)-1, rng)
 	// generate ScheduleItems
 	var k = 0
 	for _, instructedClazz := range g.params.AllInstructedClazz {

@@ -1,6 +1,9 @@
 package scheduling
 
-import "log"
+import (
+	"log"
+	"math/rand"
+)
 
 func normalizeFloat64(x, min, max float64) float64 {
 	if x < min {
@@ -16,4 +19,18 @@ func normalizeFloat64(x, min, max float64) float64 {
 
 type pair struct {
 	first, second interface{}
+}
+
+func randomInts(k uint, min, max int, rng *rand.Rand) []int {
+	var ints = make([]int, k)
+	for i := 0; i < int(k); i++ {
+		ints[i] = i + min
+	}
+	for i := int(k); i < max-min; i++ {
+		var j = rng.Intn(i + 1)
+		if j < int(k) {
+			ints[j] = i + min
+		}
+	}
+	return ints
 }

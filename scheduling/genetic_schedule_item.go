@@ -49,17 +49,17 @@ func (s GeneticScheduleItemCollection) Replace(slice eaopt.Slice) {
 }
 
 func (s GeneticScheduleItemCollection) Copy() eaopt.Slice {
-	var t = make(GeneticScheduleItemCollection, len(s))
-	copy(t, s) // generate new slice
+	var t = make([]*models.ScheduleItem, len(s))
 	for i := range t {
 		// and deep copy all elements in the slice
 		t[i] = &models.ScheduleItem{
-			Instruct:   t[i].Instruct,
-			Clazz:      t[i].Clazz,
-			Clazzroom:  &models.Clazzroom{Id: t[i].Clazzroom.Id},
-			TimespanId: t[i].TimespanId,
-			DayOfWeek:  t[i].DayOfWeek,
+			ScheduleItemId: s[i].ScheduleItemId,
+			Instruct:       s[i].Instruct,
+			Clazz:          s[i].Clazz,
+			Clazzroom:      &models.Clazzroom{Id: s[i].Clazzroom.Id},
+			TimespanId:     s[i].TimespanId,
+			DayOfWeek:      s[i].DayOfWeek,
 		}
 	}
-	return t
+	return GeneticScheduleItemCollection(t)
 }

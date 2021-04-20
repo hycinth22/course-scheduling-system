@@ -45,11 +45,19 @@ var availableWeekday = []int{1, 2, 3, 4, 5}
 
 func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	g.printParams()
-	config := eaopt.NewDefaultGAConfig()
-	config.NGenerations = Config.MaxGenerations
-	config.ParallelEval = true
-	config.Model = eaopt.ModMutationOnly{Strict: true}
-	timeout := time.NewTimer(Config.Timeout)
+	config := eaopt.GAConfig{
+		NPops:        3,
+		PopSize:      100,
+		NGenerations: Config.MaxGenerations,
+		HofSize:      1,
+		Model:        eaopt.ModMutationOnly{Strict: true},
+		ParallelEval: true,
+		Migrator:     eaopt.MigRing{NMigrants: 5},
+		MigFrequency: 5,
+		Speciator:    nil,
+		Logger:       nil,
+	}
+	var timeout *time.Timer
 	var (
 		LastFitness     = math.NaN()
 		LastFitnessKeep = 0
@@ -60,7 +68,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		invalid := bestCandidate.Invalidity()
 		if invalid == 0.0 {
 			ga.Model = &eaopt.ModDownToSize{
-				NOffsprings: 101,
+				NOffsprings: 35,
 				SelectorA:   eaopt.SelTournament{5},
 				SelectorB:   eaopt.SelElitism{},
 				MutRate:     0.95,
@@ -114,6 +122,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		return nil
 	}
 	// Run the GA
+	timeout = time.NewTimer(Config.Timeout)
 	err = ga.Minimize(func(rng *rand.Rand) eaopt.Genome {
 		return MakeGeneticSchedule(g, rng)
 	})

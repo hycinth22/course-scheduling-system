@@ -45,7 +45,7 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 		for cnt := 0; cnt < instructedClazz.Instruct.Course.LessonsPerWeek; cnt++ {
 			seq := placeSeq[k]
 			item := &models.ScheduleItem{
-				ScheduleItemId: 0, // keep empty, filled by models package
+				ScheduleItemId: k, // keep empty, filled by models package
 				ScheduleId:     0, // keep empty, filled by models package
 				Instruct:       instructedClazz.Instruct,
 				Clazz:          instructedClazz.Clazz,
@@ -128,9 +128,18 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 	}
 }
 
-// Mutate swap two ScheduleItem's placement at 3 times.
+// Mutate swap two ScheduleItem's placement at 2 times.
 func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
-	eaopt.MutPermute(X.items, 2, rng)
+	const times = 2
+	// eaopt.MutPermute(X.items, times, rng)
+	if X.items.Len() <= 1 {
+		return
+	}
+	for i := 0; i < times; i++ {
+		// Choose two items randomly
+		var ids = randomInts(2, 0, X.items.Len(), rng)
+		X.items.Swap(ids[0], ids[1])
+	}
 }
 
 // Crossover GeneticSchedule with another by applying 1-ScheduleItem crossover.

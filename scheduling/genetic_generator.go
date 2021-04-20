@@ -63,8 +63,8 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 				NOffsprings: 101,
 				SelectorA:   eaopt.SelTournament{5},
 				SelectorB:   eaopt.SelElitism{},
-				MutRate:     0.9,
-				CrossRate:   0.01,
+				MutRate:     0.95,
+				CrossRate:   0.05,
 			}
 		} else {
 			ga.Model = &eaopt.ModMutationOnly{Strict: true}

@@ -15,7 +15,7 @@ func init() {
 	Config = ConfigType{
 		MaxGenerations:        10e9,
 		Timeout:               60 * time.Second,
-		StopWhenFitnessKeep:   100,
+		StopWhenFitnessKeep:   150,
 		FitnessJudgePrecision: 0.01,
 	}
 }

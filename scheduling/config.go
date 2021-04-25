@@ -7,15 +7,31 @@ type ConfigType struct {
 	Timeout               time.Duration
 	StopWhenFitnessKeep   int
 	FitnessJudgePrecision float64
+
+	NumOfPopulations, SizeOfPopulation, NumOfOffsprings uint
+
+	MutationRate, CrossoverRate float64
+
+	MigrateAfterNGenerations, NumberOfMigrants int
 }
 
-var Config ConfigType
+var DefaultConfig ConfigType
 
 func init() {
-	Config = ConfigType{
+	DefaultConfig = ConfigType{
 		MaxGenerations:        10e9,
 		Timeout:               60 * time.Second,
 		StopWhenFitnessKeep:   100,
 		FitnessJudgePrecision: 0.01,
+
+		MutationRate:  0.05,
+		CrossoverRate: 0.95,
+
+		NumOfPopulations: 1,
+		SizeOfPopulation: 100,
+		NumOfOffsprings:  25,
+
+		MigrateAfterNGenerations: 20,
+		NumberOfMigrants:         30,
 	}
 }

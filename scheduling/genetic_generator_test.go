@@ -28,7 +28,7 @@ func TestGenerator_GenerateSchedule(t *testing.T) {
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
-	})
+	}, DefaultConfig)
 	g.GenerateSchedule()
 }
 
@@ -52,7 +52,7 @@ func BenchmarkGenerator_GenerateSchedule(b *testing.B) {
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
-	})
+	}, DefaultConfig)
 	b.ResetTimer()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {

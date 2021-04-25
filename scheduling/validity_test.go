@@ -28,7 +28,7 @@ func BenchmarkGeneticschedule_Invalidity(b *testing.B) {
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
-	})
+	}, DefaultConfig)
 	s := MakeGeneticSchedule(g, rand.New(rand.NewSource(time.Now().UnixNano())))
 	b.ResetTimer()
 	b.StartTimer()

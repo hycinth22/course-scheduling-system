@@ -11,6 +11,12 @@ import (
 	"github.com/MaxHalford/eaopt"
 )
 
+type Params struct {
+	AllInstructedClazz []*models.InstructedClazz
+	AllClazzroom       []*models.Clazzroom
+	AllTimespan        []*models.Timespan
+}
+
 type Generator struct {
 	params *Params
 
@@ -19,10 +25,12 @@ type Generator struct {
 	timespanMap  map[int]*models.Timespan
 
 	p *sync.Pool
+
+	config ConfigType
 }
 
-func NewGenerator(params *Params) *Generator {
-	g := &Generator{params: params}
+func NewGenerator(params *Params, config ConfigType) *Generator {
+	g := &Generator{params: params, config: config}
 	g.cntLessons = 0
 	for i := range params.AllInstructedClazz {
 		g.cntLessons += params.AllInstructedClazz[i].Instruct.Course.LessonsPerWeek
@@ -46,13 +54,13 @@ var availableWeekday = []int{1, 2, 3, 4, 5}
 func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	g.printParams()
 	config := eaopt.GAConfig{
-		NPops:        3,
-		PopSize:      100,
-		NGenerations: Config.MaxGenerations,
+		NPops:        g.config.NumOfPopulations,
+		PopSize:      g.config.SizeOfPopulation,
+		NGenerations: g.config.MaxGenerations,
 		HofSize:      1,
 		Model:        eaopt.ModMutationOnly{Strict: true},
 		ParallelEval: true,
-		Migrator:     eaopt.MigRing{NMigrants: 5},
+		Migrator:     eaopt.MigRing{NMigrants: 20},
 		MigFrequency: 5,
 		Speciator:    nil,
 		Logger:       nil,
@@ -62,17 +70,17 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		LastFitness     = math.NaN()
 		LastFitnessKeep = 0
 	)
-	// Stop when fitness is unchanged (precision is as FitnessJudgePrecision) in 500 generations
+	// Stop when fitness is unchanged (precision is as FitnessJudgePrecision) in g.config.StopWhenFitnessKeep generations
 	config.EarlyStop = func(ga *eaopt.GA) bool {
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		invalid := bestCandidate.Invalidity()
 		if invalid == 0.0 {
 			ga.Model = &eaopt.ModDownToSize{
-				NOffsprings: 35,
-				SelectorA:   eaopt.SelTournament{5},
+				NOffsprings: g.config.NumOfOffsprings,
+				SelectorA:   eaopt.SelTournament{NContestants: 5},
 				SelectorB:   eaopt.SelElitism{},
-				MutRate:     0.95,
-				CrossRate:   0.05,
+				MutRate:     g.config.MutationRate,
+				CrossRate:   g.config.CrossoverRate,
 			}
 		} else {
 			ga.Model = &eaopt.ModMutationOnly{Strict: true}
@@ -81,7 +89,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		case <-timeout.C:
 			return true
 		default:
-			return LastFitnessKeep > Config.StopWhenFitnessKeep
+			return LastFitnessKeep > g.config.StopWhenFitnessKeep
 		}
 	}
 	// Add a custom print function to track progress
@@ -92,7 +100,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		fitness := ga.HallOfFame[0].Fitness
 		invalid := bestCandidate.Invalidity()
-		if invalid == 0.0 && math.Abs(fitness-LastFitness) < Config.FitnessJudgePrecision {
+		if invalid == 0.0 && math.Abs(fitness-LastFitness) < g.config.FitnessJudgePrecision {
 			LastFitnessKeep++
 		} else {
 			LastFitness = fitness
@@ -122,7 +130,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		return nil
 	}
 	// Run the GA
-	timeout = time.NewTimer(Config.Timeout)
+	timeout = time.NewTimer(g.config.Timeout)
 	err = ga.Minimize(func(rng *rand.Rand) eaopt.Genome {
 		return MakeGeneticSchedule(g, rng)
 	})

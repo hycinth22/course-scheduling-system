@@ -30,7 +30,7 @@ func init() {
 }
 
 func BenchmarkGeneticSchedule_Clone(b *testing.B) {
-	g := NewGenerator(testParams)
+	g := NewGenerator(testParams, DefaultConfig)
 	s := MakeGeneticSchedule(g, rand.New(rand.NewSource(time.Now().UnixNano())))
 	b.ResetTimer()
 	b.StartTimer()
@@ -42,7 +42,7 @@ func BenchmarkGeneticSchedule_Clone(b *testing.B) {
 }
 
 func BenchmarkGeneticSchedule_String(b *testing.B) {
-	g := NewGenerator(testParams)
+	g := NewGenerator(testParams, DefaultConfig)
 	s := MakeGeneticSchedule(g, rand.New(rand.NewSource(time.Now().UnixNano())))
 	b.ResetTimer()
 	b.StartTimer()
@@ -53,7 +53,7 @@ func BenchmarkGeneticSchedule_String(b *testing.B) {
 }
 
 func BenchmarkMakeGeneticSchedule(b *testing.B) {
-	g := NewGenerator(testParams)
+	g := NewGenerator(testParams, DefaultConfig)
 	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 	b.ResetTimer()
 	b.StartTimer()

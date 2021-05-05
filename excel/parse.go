@@ -42,13 +42,13 @@ func ParseCourseExcel(reader io.Reader) (r []*models.Course) {
 			log.Println(err)
 			continue
 		}
-		lessons /= 2
+		lessons = (lessons + 1) / 2
 		lpw, err := strconv.Atoi(strings.TrimSpace(row[8]))
 		if err != nil {
 			log.Println(err)
 			continue
 		}
-		lpw /= 2
+		lpw = (lpw + 1) / 2
 		r = append(r, &models.Course{
 			Id:             row[2],
 			Name:           row[3],

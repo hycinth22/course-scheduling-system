@@ -78,9 +78,9 @@ func (tC *CourseController) ImportFromExcel() {
 }
 
 // @Title CourseGetAll
-// @Param	search	     query   string  true    "search key"
-// @Param	pageIndex	 query   int    true    ""
-// @Param	pageSize	 query   int     true    ""
+// @Param	search	     query   string  false    "search key"
+// @Param	pageIndex	 query   int    false    ""
+// @Param	pageSize	 query   int     false    ""
 // @Description Get all Courses
 // @Success 200 {array} models.Course
 // @router / [get]

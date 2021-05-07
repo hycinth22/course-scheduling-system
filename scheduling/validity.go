@@ -11,7 +11,7 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 			key := timespanInDay{item.TimespanId, item.DayOfWeek}
 			//log.Printf("teacher%v %+v is allocated to Instruct%v", teacher, key, item.Instruct.InstructId)
 			if all.Has(key) {
-				//log.Println("detect against h1")
+				// log.Println("detect against h1", item)
 				cnt0++
 			}
 			all.Insert(key)

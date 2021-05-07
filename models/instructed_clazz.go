@@ -61,6 +61,35 @@ func AllInstructedClazzesForScheduling(semester *Semester) ([]*InstructedClazz, 
 	return r, err
 }
 
+func AllInstructedClazzesForInstruct(instruct_id int) ([]*InstructedClazz, error) {
+	var r []*InstructedClazz
+	o := orm.NewOrm()
+	num, err := o.QueryTable("instructed_clazz").Filter("instruct_id", instruct_id).All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+		return nil, err
+	}
+	for i := range r {
+		_, err := o.LoadRelated(r[i], "instruct")
+		if err != nil {
+			return nil, err
+		}
+		_, err = o.LoadRelated(r[i].Instruct, "course")
+		if err != nil {
+			return nil, err
+		}
+		_, err = o.LoadRelated(r[i].Instruct, "teacher")
+		if err != nil {
+			return nil, err
+		}
+		_, err = o.LoadRelated(r[i], "clazz")
+		if err != nil {
+			return nil, err
+		}
+	}
+	return r, err
+}
+
 func AddInstructedClazz(c InstructedClazz) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(&c)

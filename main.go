@@ -22,6 +22,7 @@ func main() {
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
 		AllowCredentials: true,
 	}))
+	web.BConfig.WebConfig.Session.SessionOn = true
 	// launch now
 	web.Run()
 }

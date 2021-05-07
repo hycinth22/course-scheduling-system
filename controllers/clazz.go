@@ -39,3 +39,33 @@ func (c *ClazzController) GetAll() {
 		return
 	}
 }
+
+// @router /list [get]
+func (this *ClazzController) List() {
+	var query struct {
+		Search    string `form:"search"`
+		PageIndex int    `form:"pageIndex"`
+		PageSize  int    `form:"pageSize"`
+	}
+	if err := this.ParseForm(&query); err != nil {
+		log.Println(err)
+	}
+	var (
+		courses []*models.Clazz
+		total   int
+	)
+	if query.Search == "" {
+		courses, total = models.ListClazzes(getOffset(query.PageIndex, query.PageSize), query.PageSize)
+	} else {
+		courses, total = models.SearchClazzes(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Search)
+	}
+	this.Data["json"] = map[string]interface{}{
+		"list":      courses,
+		"pageTotal": total,
+	}
+	err := this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}

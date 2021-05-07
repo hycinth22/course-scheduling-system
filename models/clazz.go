@@ -13,6 +13,7 @@ type Clazz struct {
 	ClazzId string `orm:"column(clazz_id);pk" json:"clazz_id"`
 	// Attributes
 	ClazzName string    `orm:"column(clazz_name)" json:"clazz_name"`
+	Spec      string    `orm:"column(spec)" json:"spec"`
 	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
 	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
 	// Foreign
@@ -77,4 +78,37 @@ func AllClazzesInColleges(coll *College) (r []*Clazz, err error) {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
 	}
 	return r, err
+}
+
+func ListClazzes(offset, limit int) ([]*Clazz, int) {
+	var r []*Clazz
+	o := orm.NewOrm()
+	num, err := o.QueryTable("clazz").Offset(offset).Limit(limit).RelatedSel().All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	cnt, err := o.QueryTable("clazz").Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+	}
+	return r, int(cnt)
+}
+
+func SearchClazzes(offset, limit int, search string) (r []*Clazz, total int) {
+	o := orm.NewOrm()
+	cond1 := orm.NewCondition().And("clazz_id__startswith", search).Or("clazz_id__endswith", search)
+	cond2 := orm.NewCondition().And("clazz_name__startswith", search).Or("clazz_name__endswith", search)
+	cond3 := orm.NewCondition().And("college_id__startswith", search).Or("college_id__endswith", search)
+	cond := cond1.OrCond(cond2).OrCond(cond3)
+	num, err := o.QueryTable("clazz").SetCond(cond).Offset(offset).Limit(limit).RelatedSel().All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+		return nil, 0
+	}
+	cnt, err := o.QueryTable("clazz").SetCond(cond).Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+		return nil, 0
+	}
+	return r, int(cnt)
 }

@@ -186,10 +186,12 @@ func ParseClazzExcel(reader io.Reader) (r []*models.Clazz) {
 		id := strings.TrimSpace(row[0])
 		name := strings.TrimSpace(row[1])
 		colID := strings.TrimSpace(row[2])
+		spec := strings.TrimSpace(row[3])
 		r = append(r, &models.Clazz{
 			ClazzId:   id,
 			ClazzName: name,
 			College:   &models.College{Id: colID},
+			Spec:      spec,
 		})
 	}
 	return

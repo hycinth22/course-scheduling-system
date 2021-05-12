@@ -24,19 +24,19 @@ type ScheduleController struct {
 // @Success 200 {array} models.Schedule
 // @Failure 400 :semester_date is empty
 // @router / [get]
-func (c *ScheduleController) GetSchedule() {
-	s := c.Ctx.Input.Query("semester_date")
+func (this *ScheduleController) GetSchedule() {
+	s := this.Ctx.Input.Query("semester_date")
 	if s == "" {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	result, err := models.GetSchedulesInSemester(s)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		this.Data["json"] = err.Error()
 		return
 	}
-	c.Data["json"] = result
-	err = c.ServeJSON()
+	this.Data["json"] = result
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return
@@ -49,28 +49,28 @@ func (c *ScheduleController) GetSchedule() {
 // @Success 200 {object} models.Schedule
 // @Failure 400 :semester_date is empty
 // @router /new [get]
-func (c *ScheduleController) NewSchedule() {
-	semesterDate := c.Ctx.Input.Query("semester_date")
+func (this *ScheduleController) NewSchedule() {
+	semesterDate := this.Ctx.Input.Query("semester_date")
 	if semesterDate == "" {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	semester := &models.Semester{StartDate: semesterDate}
 	allInstructedClazz, err := models.AllInstructedClazzesForScheduling(semester)
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		log.Println(err)
 		return
 	}
 	allClazzroom, err := models.AllClazzroom()
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		log.Println(err)
 		return
 	}
 	allTimespan, err := models.AllTimespan()
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		log.Println(err)
 		return
 	}
@@ -82,14 +82,14 @@ func (c *ScheduleController) NewSchedule() {
 	s, err := models.AddNewSchedule(semester, result, len(allTimespan))
 	if err != nil {
 		log.Println(err)
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	c.Data["json"] = s
-	err = c.ServeJSON()
+	this.Data["json"] = s
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
 }
@@ -100,18 +100,18 @@ func (c *ScheduleController) NewSchedule() {
 // @Success 200 {string} "ok"
 // @Failure 400 :schedule_id is empty
 // @router /:schedule_id [delete]
-func (c *ScheduleController) DeleteSchedule() {
-	id, err := c.GetInt(":schedule_id")
+func (this *ScheduleController) DeleteSchedule() {
+	id, err := this.GetInt(":schedule_id")
 	if err != nil {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	err = models.DelSchedule(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		this.Data["json"] = err.Error()
 	}
-	c.Data["json"] = "delete ok!"
-	err = c.ServeJSON()
+	this.Data["json"] = "delete ok!"
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return
@@ -124,15 +124,15 @@ func (c *ScheduleController) DeleteSchedule() {
 // @Success 200 {string} "ok"
 // @Failure 400 semester_date is empty
 // @router / [delete]
-func (c *ScheduleController) DeleteAllScheduleInSemester() {
-	semesterDate := c.Ctx.Input.Query("semester_date")
+func (this *ScheduleController) DeleteAllScheduleInSemester() {
+	semesterDate := this.Ctx.Input.Query("semester_date")
 	if semesterDate == "" {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	schs, err := models.GetSchedulesInSemester(semesterDate)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		this.Data["json"] = err.Error()
 		return
 	}
 	var ids []int
@@ -141,10 +141,10 @@ func (c *ScheduleController) DeleteAllScheduleInSemester() {
 	}
 	err = models.DelSchedules(ids)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		this.Data["json"] = err.Error()
 	}
-	c.Data["json"] = "delete ok!"
-	err = c.ServeJSON()
+	this.Data["json"] = "delete ok!"
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return
@@ -157,18 +157,18 @@ func (c *ScheduleController) DeleteAllScheduleInSemester() {
 // @Success 200 {array} models.ScheduleItem
 // @Failure 400 :schedule_id is empty
 // @router /:schedule_id/items [get]
-func (c *ScheduleController) GetScheduleItems() {
-	id, err := c.GetInt(":schedule_id")
+func (this *ScheduleController) GetScheduleItems() {
+	id, err := this.GetInt(":schedule_id")
 	if err != nil {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	result, err := models.GetScheduleItems(id)
 	if err != nil {
-		c.Data["json"] = err.Error()
+		this.Data["json"] = err.Error()
 	}
-	c.Data["json"] = result
-	err = c.ServeJSON()
+	this.Data["json"] = result
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return
@@ -203,9 +203,16 @@ func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, error) {
 				result.ByDept[item.Instruct.Teacher.Dept.DeptId][timespan] = make(map[int][]*models.ScheduleItem, cntWeekday)
 			}
 		}
+		if result.ByTeacherPersonal[item.Instruct.Teacher.Id] == nil {
+			result.ByTeacherPersonal[item.Instruct.Teacher.Id] = make([]map[int]*models.ScheduleItem, sch.UseTimespan)
+			for timespan := 0; timespan < sch.UseTimespan; timespan++ {
+				result.ByTeacherPersonal[item.Instruct.Teacher.Id][timespan] = make(map[int]*models.ScheduleItem, cntWeekday)
+			}
+		}
 		// insert view data
 		result.ByClazz[item.Clazz.ClazzId][item.TimespanId-1][item.DayOfWeek] = item
 		result.ByDept[item.Instruct.Teacher.Dept.DeptId][item.TimespanId-1][item.DayOfWeek] = append(result.ByDept[item.Instruct.Teacher.Dept.DeptId][item.TimespanId-1][item.DayOfWeek], item)
+		result.ByTeacherPersonal[item.Instruct.Teacher.Id][item.TimespanId-1][item.DayOfWeek] = item
 	}
 	return result, nil
 }
@@ -216,19 +223,19 @@ func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, error) {
 // @Success 200 {object} views.ScheduleItemsTableView
 // @Failure 400 :schedule_id is empty
 // @router /:schedule_id/items/group_view [get]
-func (c *ScheduleController) GetScheduleItemsGroupView() {
-	id, err := c.GetInt(":schedule_id")
+func (this *ScheduleController) GetScheduleItemsGroupView() {
+	id, err := this.GetInt(":schedule_id")
 	if err != nil {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	result, err := getScheduleGroupView(id)
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	c.Data["json"] = result
-	err = c.ServeJSON()
+	this.Data["json"] = result
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return
@@ -242,32 +249,32 @@ func (c *ScheduleController) GetScheduleItemsGroupView() {
 // @Success 200 {object} views.ScheduleItemsTableView
 // @Failure 400 :schedule_id is empty
 // @router /:schedule_id/student_excel [get]
-func (c *ScheduleController) ScheduleDownloadStudentExcel() {
-	id, err := c.GetInt(":schedule_id")
+func (this *ScheduleController) ScheduleDownloadStudentExcel() {
+	id, err := this.GetInt(":schedule_id")
 	if err != nil {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
-	col := c.Ctx.Input.Query("college_id")
+	col := this.Ctx.Input.Query("college_id")
 	if col == "" {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	result, err := getScheduleGroupView(id)
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
 	var clazzes []*models.Clazz
 	clazzes, err = models.AllClazzesInColleges(&models.College{Id: col})
 	if err != nil {
 		log.Println(err)
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	tmpfile, err := ioutil.TempFile("", "course_schedule_excel_*.xls")
+	tmpfile, err := ioutil.TempFile("", "teacher_table_*.xls")
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
 	defer func(name string) {
@@ -283,10 +290,10 @@ func (c *ScheduleController) ScheduleDownloadStudentExcel() {
 	}(tmpfile.Name())
 	err = excel.GenStudentTables(tmpfile, result, clazzes)
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	c.Ctx.Output.Download(tmpfile.Name())
+	this.Ctx.Output.Download(tmpfile.Name())
 }
 
 // @Title ScheduleDownloadExcel2
@@ -296,32 +303,32 @@ func (c *ScheduleController) ScheduleDownloadStudentExcel() {
 // @Success 200 {object} views.ScheduleItemsTableView
 // @Failure 400 :schedule_id is empty
 // @router /:schedule_id/teacher_excel [get]
-func (c *ScheduleController) ScheduleDownloadTeacherExcel() {
-	id, err := c.GetInt(":schedule_id")
+func (this *ScheduleController) ScheduleDownloadTeacherExcel() {
+	id, err := this.GetInt(":schedule_id")
 	if err != nil {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
-	col := c.Ctx.Input.Query("college_id")
+	col := this.Ctx.Input.Query("college_id")
 	if col == "" {
-		c.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.SetStatus(400)
 		return
 	}
 	result, err := getScheduleGroupView(id)
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
 	var depts []*models.Department
 	depts, err = models.AllDepartmentsInColleges(&models.College{Id: col})
 	if err != nil {
 		log.Println(err)
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	tmpfile, err := ioutil.TempFile("", "course_schedule_excel_*.xls")
+	tmpfile, err := ioutil.TempFile("", "dept_table_*.xls")
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
 	defer func(name string) {
@@ -337,8 +344,86 @@ func (c *ScheduleController) ScheduleDownloadTeacherExcel() {
 	}(tmpfile.Name())
 	err = excel.GenTeacherTables(tmpfile, result, depts)
 	if err != nil {
-		c.Ctx.Output.SetStatus(500)
+		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	c.Ctx.Output.Download(tmpfile.Name())
+	this.Ctx.Output.Download(tmpfile.Name())
+}
+
+// @router /:schedule_id/teacher_personal_excel [get]
+func (this *ScheduleController) ScheduleDownloadTeacherPersonalExcel() {
+	id, err := this.GetInt(":schedule_id")
+	if err != nil {
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	teacher_id := this.Ctx.Input.Query("teacher_id")
+	teacher, err := models.GetTeacher(teacher_id)
+	if err != nil {
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+	result, err := getScheduleGroupView(id)
+	if err != nil {
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+	tmpfile, err := ioutil.TempFile("", "teacher_table_*.xls")
+	if err != nil {
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+	defer func(name string) {
+		err := tmpfile.Close()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		err = os.Remove(name)
+		if err != nil {
+			log.Println(err)
+		}
+	}(tmpfile.Name())
+	err = excel.GenTeacherPersonalTables(tmpfile, result, teacher)
+	if err != nil {
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+	this.Ctx.Output.Download(tmpfile.Name())
+}
+
+// @router /selected [put]
+func (this *ScheduleController) SelectSchedule() {
+	semester := this.GetString("semester")
+	if semester == "" {
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	schedule, err := this.GetInt("schedule")
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	c, err := models.GetConfig()
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+	c.SelectedSchedule = schedule
+	c.SelectedSemester = semester
+	err = models.SaveConfig(c)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+	this.Data["json"] = "ok"
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
 }

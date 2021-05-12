@@ -117,3 +117,38 @@ func GenTeacherTables(writer io.Writer, view *views.ScheduleItemsTableView, dept
 	err = f.Write(writer)
 	return err
 }
+
+func GenTeacherPersonalTables(writer io.Writer, view *views.ScheduleItemsTableView, teacher *models.Teacher) (err error) {
+	defer func() {
+		if x := recover(); x != nil {
+			err = errors.Errorf("%v", x)
+		}
+	}()
+	f := excelize.NewFile()
+	sheetName := teacher.Id + teacher.Name
+	f.NewSheet(sheetName)
+	// 表头
+	_ = f.SetCellStr(sheetName, "A1", "时间段")
+	checkError(f.SetCellStr(sheetName, "B1", "周一"))
+	checkError(f.SetCellStr(sheetName, "C1", "周二"))
+	checkError(f.SetCellStr(sheetName, "D1", "周三"))
+	checkError(f.SetCellStr(sheetName, "E1", "周四"))
+	checkError(f.SetCellStr(sheetName, "F1", "周五"))
+	checkError(f.SetCellStr(sheetName, "G1", "周六"))
+	checkError(f.SetCellStr(sheetName, "H1", "周日"))
+	for i, r := range view.ByTeacherPersonal[teacher.Id] {
+		rowIndex := strconv.Itoa(i + 2)
+		checkError(f.SetCellStr(sheetName, "A"+rowIndex, strconv.Itoa(i)))
+		checkError(f.SetCellStr(sheetName, "B"+rowIndex, formatCell1(r[1])))
+		checkError(f.SetCellStr(sheetName, "C"+rowIndex, formatCell1(r[2])))
+		checkError(f.SetCellStr(sheetName, "D"+rowIndex, formatCell1(r[3])))
+		checkError(f.SetCellStr(sheetName, "E"+rowIndex, formatCell1(r[4])))
+		checkError(f.SetCellStr(sheetName, "F"+rowIndex, formatCell1(r[5])))
+		checkError(f.SetCellStr(sheetName, "G"+rowIndex, formatCell1(r[6])))
+		checkError(f.SetCellStr(sheetName, "H"+rowIndex, formatCell1(r[7])))
+	}
+
+	f.DeleteSheet("Sheet1")
+	err = f.Write(writer)
+	return err
+}

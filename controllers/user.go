@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"log"
+	"time"
 
 	"courseScheduling/models"
 
@@ -19,21 +20,31 @@ type UserController struct {
 // @Success 200 {string} login success
 // @Failure 403 user not exist
 // @router /login [get]
-func (u *UserController) Login() {
-	username := u.GetString("username")
-	password := u.GetString("password")
-	if models.Login(username, password) {
-		u.Data["json"] = map[string]interface{}{
+func (this *UserController) Login() {
+	username := this.GetString("username")
+	password := this.GetString("password")
+	if ok, u := models.CanLogin(username, password); ok {
+		this.Data["json"] = map[string]interface{}{
 			"code": 0,
 			"msg":  "login success",
+			"profile": map[string]interface{}{
+				"username": u.Username,
+				"role":     u.Role,
+				"lastTime": u.LastLogin,
+				"lastLoc":  u.LastLoc,
+			},
+		}
+		err := models.UpdateLogin(u, time.Now(), getIPLoc(this.Ctx.Input.IP()))
+		if err != nil {
+			log.Println(err)
 		}
 	} else {
-		u.Data["json"] = map[string]interface{}{
+		this.Data["json"] = map[string]interface{}{
 			"code": -10001,
 			"msg":  "user not exist",
 		}
 	}
-	err := u.ServeJSON()
+	err := this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return

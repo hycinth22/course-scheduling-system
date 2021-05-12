@@ -20,6 +20,16 @@ type Teacher struct {
 	Dept *Department `orm:"column(dept_id);rel(fk)" json:"dept"`
 }
 
+func GetTeacher(id string) (*Teacher, error) {
+	t := &Teacher{Id: id}
+	o := orm.NewOrm()
+	err := o.Read(t)
+	if err != nil {
+		log.Printf("GetTeacher Err: %d, %v\n", err)
+	}
+	return t, err
+}
+
 func AddTeacher(c Teacher) error {
 	o := orm.NewOrm()
 	_, err := o.Insert(&c)
@@ -100,4 +110,22 @@ func SearchTeachers(offset, limit int, search string) ([]*Teacher, int) {
 		return nil, 0
 	}
 	return r, int(cnt)
+}
+
+func AllTeachersInColleges(coll *College) (r []*Teacher, err error) {
+	o := orm.NewOrm()
+	var depts []*Department
+	num, err := o.QueryTable("department").Filter("college_id", coll.Id).All(&depts)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	var deptIDs []string
+	for _, d := range depts {
+		deptIDs = append(deptIDs, d.DeptId)
+	}
+	num, err = o.QueryTable("teacher").Filter("dept_id__in", deptIDs).All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	return r, err
 }

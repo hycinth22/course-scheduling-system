@@ -116,3 +116,27 @@ func (this *TeacherController) Delete() {
 		return
 	}
 }
+
+// @router /list [get]
+func (c *TeacherController) ListAllInColleges() {
+	var err error
+	col := c.Ctx.Input.Query("college_id")
+	if col == "" {
+		c.Ctx.Output.SetStatus(400)
+		return
+	}
+	var r []*models.Teacher
+	r, err = models.AllTeachersInColleges(&models.College{Id: col})
+	if err != nil {
+		log.Println(err)
+		c.Ctx.Output.SetStatus(500)
+		return
+	}
+	c.Data["json"] = r
+	err = c.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		c.Ctx.Output.SetStatus(500)
+		return
+	}
+}

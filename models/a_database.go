@@ -24,6 +24,8 @@ func init() {
 	orm.RegisterModel(new(Schedule), new(ScheduleItem))
 	orm.RegisterModel(new(Semester))
 	orm.RegisterModel(new(Timespan))
+	orm.RegisterModel(new(ConfigInDb))
+	orm.RegisterModel(new(User))
 	orm.BootStrap()
 	// create table
 	if err := orm.RunSyncdb("default", false, true); err != nil {

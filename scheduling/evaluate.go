@@ -135,7 +135,7 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	// 归一化
 	var (
 		minSdevCntInD = 0.0
-		maxSdevCntInD = float64(maxTimespan)
+		maxSdevCntInD = float64(X.parent.cntLessons)
 	)
 	uniSdevCntInD := normalizeFloat64(sdevCntInD, minSdevCntInD, maxSdevCntInD)
 	// log.Println("uniSdev:", uniSdev)

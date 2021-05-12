@@ -24,7 +24,7 @@ type CourseController struct {
 // @router / [post]
 func (tC *CourseController) Create() {
 	var c models.Course
-	err := json.Unmarshal(tC.Ctx.Input.RequestBody, &tC)
+	err := json.Unmarshal(tC.Ctx.Input.RequestBody, &c)
 	if err != nil {
 		log.Println(err)
 		tC.Ctx.Output.SetStatus(400)

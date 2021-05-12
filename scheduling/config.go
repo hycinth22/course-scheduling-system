@@ -25,7 +25,7 @@ func init() {
 		FitnessJudgePrecision: 0.01,
 
 		MutationRate:  0.95,
-		CrossoverRate: 0.10,
+		CrossoverRate: 0.01,
 
 		NumOfPopulations: 1,
 		SizeOfPopulation: 100,

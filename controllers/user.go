@@ -50,3 +50,33 @@ func (this *UserController) Login() {
 		return
 	}
 }
+
+// @router /list [get]
+func (this *UserController) GetAll() {
+	var query struct {
+		Search    string `form:"search"`
+		PageIndex int    `form:"pageIndex"`
+		PageSize  int    `form:"pageSize"`
+	}
+	if err := this.ParseForm(&query); err != nil {
+		log.Println(err)
+	}
+	var (
+		courses []*models.User
+		total   int
+	)
+	if query.Search == "" {
+		courses, total = models.ListUsers(getOffset(query.PageIndex, query.PageSize), query.PageSize)
+	} else {
+		courses, total = models.SearchUsers(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Search)
+	}
+	this.Data["json"] = map[string]interface{}{
+		"list":      courses,
+		"pageTotal": total,
+	}
+	err := this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}

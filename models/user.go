@@ -8,15 +8,16 @@ import (
 )
 
 type User struct {
-	Id        int       `orm:"pk;auto" json:"id"`
-	Username  string    `orm:"unique;index" json:"name"`
-	Password  string    `orm:"" json:"pwd"`
-	Role      string    `orm:"" json:"role"`
-	Status    int       `orm:"" json:"status"`
-	LastLogin time.Time `json:"last_login_time"`
-	LastLoc   string    `json:"last_login_loc;default:'未登陆'"`
-	CreatedAt time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"-"`
-	UpdatedAt time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"-"`
+	Id                int       `orm:"column(id);pk;auto" json:"id"`
+	Username          string    `orm:"column(username);unique;index" json:"name"`
+	Password          string    `orm:"column(password)" json:"-"`
+	Role              string    `orm:"column(role)" json:"role"`
+	Status            int       `orm:"column(status)" json:"status"`
+	LastLogin         time.Time `orm:"column(last_login_time)" json:"last_login_time"`
+	LastLoc           string    `orm:"column(last_login_loc);default:'从未登陆'" json:"last_login_loc"`
+	AssociatedTeacher *Teacher  `orm:"column(associated_teacher);null;rel(fk)" json:"associated_teacher"`
+	CreatedAt         time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"created_at"`
+	UpdatedAt         time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"updated_at"`
 }
 
 func CanLogin(username, password string) (bool, *User) {
@@ -46,4 +47,39 @@ func UpdateLogin(u *User, loginTime time.Time, loginLocation string) error {
 		return err
 	}
 	return err
+}
+
+func ListUsers(offset, limit int) ([]*User, int) {
+	var r []*User
+	o := orm.NewOrm()
+	num, err := o.QueryTable("user").Offset(offset).Limit(limit).RelatedSel().All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	cnt, err := o.QueryTable("user").Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+	}
+	return r, int(cnt)
+}
+
+func SearchUsers(offset, limit int, search string) ([]*User, int) {
+	var r []*User
+	o := orm.NewOrm()
+	cond1 := orm.NewCondition().And("id__startswith", search).Or("id__endswith", search)
+	cond2 := orm.NewCondition().And("username__startswith", search).Or("username__endswith", search)
+	cond3 := orm.NewCondition().And("role__startswith", search).Or("role__endswith", search)
+	cond4 := orm.NewCondition().And("last_login_loc__startswith", search).Or("last_login_loc__endswith", search)
+	cond := cond1.OrCond(cond2).OrCond(cond3).OrCond(cond4)
+	num, err := o.QueryTable("user").SetCond(cond).Offset(offset).Limit(limit).RelatedSel().All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+		return nil, 0
+	}
+	cnt, err := o.QueryTable("user").SetCond(cond).Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+		return nil, 0
+	}
+	return r, int(cnt)
 }

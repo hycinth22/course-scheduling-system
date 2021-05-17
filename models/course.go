@@ -29,7 +29,7 @@ func (c Course) String() string {
 
 func AllCourses() ([]*Course, error) {
 	var r []*Course
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("course").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -39,7 +39,7 @@ func AllCourses() ([]*Course, error) {
 
 func ListCourses(offset, limit int) ([]*Course, int) {
 	var r []*Course
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("course").Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -53,7 +53,7 @@ func ListCourses(offset, limit int) ([]*Course, int) {
 
 func SearchCourses(offset, limit int, search string) ([]*Course, int) {
 	var r []*Course
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("course_id__startswith", search).Or("course_id__endswith", search)
 	cond2 := orm.NewCondition().And("course_name__startswith", search).Or("course_name__endswith", search)
 	cond3 := orm.NewCondition().And("course_founder__startswith", search).Or("course_founder__endswith", search)
@@ -73,7 +73,7 @@ func SearchCourses(offset, limit int, search string) ([]*Course, int) {
 
 func GetCourse(cid string) error {
 	c := &Course{Id: cid}
-	o := orm.NewOrm()
+
 	err := o.Read(c)
 	if err != nil {
 		log.Printf("GetCourse Err: %d, %v\n", err)
@@ -82,7 +82,7 @@ func GetCourse(cid string) error {
 }
 
 func UpdateCourse(c *Course) error {
-	o := orm.NewOrm()
+
 	_, err := o.Update(c)
 	if err != nil {
 		log.Printf("UpdateCourse %v\n", err)
@@ -92,7 +92,7 @@ func UpdateCourse(c *Course) error {
 }
 
 func AddOrUpdateCourse(c *Course) error {
-	o := orm.NewOrm()
+
 	_, err := o.InsertOrUpdate(c)
 	if err != nil {
 		log.Printf("AddOrUpdateCourse %v\n", err)
@@ -102,7 +102,7 @@ func AddOrUpdateCourse(c *Course) error {
 }
 
 func AddCourse(c Course) (string, error) {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddCourse %v\n", err)
@@ -111,14 +111,14 @@ func AddCourse(c Course) (string, error) {
 	return c.Id, nil
 }
 func DelCourse(cid string) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(&Course{Id: cid})
 	log.Printf("DelCourse %v\n", err)
 	return err
 }
 
 func TruncateCourse() error {
-	o := orm.NewOrm()
+
 	log.Println("TruncateCourse")
 	_, err := o.Raw("truncate table course").Exec()
 	return err

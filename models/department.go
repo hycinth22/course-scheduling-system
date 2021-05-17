@@ -19,7 +19,7 @@ type Department struct {
 }
 
 func AllDepartmentsInColleges(coll *College) (r []*Department, err error) {
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("department").Filter("college_id", coll.Id).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -29,7 +29,6 @@ func AllDepartmentsInColleges(coll *College) (r []*Department, err error) {
 
 func ListDepartments(offset, limit int) ([]*Department, int) {
 	var r []*Department
-	o := orm.NewOrm()
 	num, err := o.QueryTable("department").RelatedSel().Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -43,7 +42,7 @@ func ListDepartments(offset, limit int) ([]*Department, int) {
 
 func SearchDepartments(offset, limit int, search string) ([]*Department, int) {
 	var r []*Department
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("dept_id__startswith", search).Or("dept_id__endswith", search)
 	cond2 := orm.NewCondition().And("dept_name__startswith", search).Or("dept_name__endswith", search)
 	cond := cond1.OrCond(cond2)
@@ -62,7 +61,7 @@ func SearchDepartments(offset, limit int, search string) ([]*Department, int) {
 
 func GetDepartment(id string) (*Department, error) {
 	c := &Department{DeptId: id}
-	o := orm.NewOrm()
+
 	err := o.Read(c)
 	if err != nil {
 		log.Printf("GetDepartment Err: %d, %v\n", err)
@@ -71,7 +70,7 @@ func GetDepartment(id string) (*Department, error) {
 }
 
 func AddDepartment(c *Department) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(c)
 	if err != nil {
 		log.Printf("AddDepartment %v\n", err)
@@ -81,21 +80,21 @@ func AddDepartment(c *Department) error {
 }
 
 func UpdateDepartment(c *Department) error {
-	o := orm.NewOrm()
+
 	_, err := o.Update(c)
 	log.Printf("UpdateDepartment %v\n", err)
 	return err
 }
 
 func DelDepartment(c *Department) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelDepartment %v\n", err)
 	return err
 }
 
 func AddOrUpdateDepartment(c *Department) error {
-	o := orm.NewOrm()
+
 	_, err := o.InsertOrUpdate(c)
 	if err != nil {
 		log.Printf("AddOrUpdateDepartment %v\n", err)
@@ -106,7 +105,7 @@ func AddOrUpdateDepartment(c *Department) error {
 
 func TruncateDepartment() error {
 	log.Println("TruncateDepartment")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table department").Exec()
 	return err
 }

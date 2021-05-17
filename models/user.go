@@ -22,7 +22,7 @@ type User struct {
 
 func CanLogin(username, password string) (bool, *User) {
 	u := &User{Username: username}
-	o := orm.NewOrm()
+
 	err := o.Read(u, "Username")
 	if err != nil {
 		log.Println("login error", err)
@@ -40,7 +40,7 @@ func CanLogin(username, password string) (bool, *User) {
 func UpdateLogin(u *User, loginTime time.Time, loginLocation string) error {
 	u.LastLogin = loginTime
 	u.LastLoc = loginLocation
-	o := orm.NewOrm()
+
 	_, err := o.Update(u, "LastLogin", "LastLoc")
 	if err != nil {
 		log.Println("login error", err)
@@ -51,7 +51,7 @@ func UpdateLogin(u *User, loginTime time.Time, loginLocation string) error {
 
 func ListUsers(offset, limit int) ([]*User, int) {
 	var r []*User
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("user").Offset(offset).Limit(limit).RelatedSel().All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -65,7 +65,7 @@ func ListUsers(offset, limit int) ([]*User, int) {
 
 func SearchUsers(offset, limit int, search string) ([]*User, int) {
 	var r []*User
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("id__startswith", search).Or("id__endswith", search)
 	cond2 := orm.NewCondition().And("username__startswith", search).Or("username__endswith", search)
 	cond3 := orm.NewCondition().And("role__startswith", search).Or("role__endswith", search)

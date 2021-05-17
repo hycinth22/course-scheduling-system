@@ -2,8 +2,6 @@ package models
 
 import (
 	"log"
-
-	"github.com/beego/beego/v2/client/orm"
 )
 
 type College struct {
@@ -14,7 +12,7 @@ type College struct {
 }
 
 func AddOrUpdateCollege(c *College) error {
-	o := orm.NewOrm()
+
 	_, err := o.InsertOrUpdate(c)
 	if err != nil {
 		log.Printf("AddOrUpdateCollege %v\n", err)
@@ -25,7 +23,7 @@ func AddOrUpdateCollege(c *College) error {
 
 func AllColleges() ([]*College, error) {
 	var r []*College
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("college").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -34,7 +32,7 @@ func AllColleges() ([]*College, error) {
 }
 
 func TruncateColleges() error {
-	o := orm.NewOrm()
+
 	log.Println("TruncateColleges")
 	_, err := o.Raw("truncate table college").Exec()
 	return err

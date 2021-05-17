@@ -41,7 +41,6 @@ func (s ScheduleItem) String() string {
 
 func GetSchedule(sid int) (*Schedule, error) {
 	s := &Schedule{Id: sid}
-	o := orm.NewOrm()
 	err := o.Read(s)
 	if err != nil {
 		log.Printf("GetSchedule Err: %v\n", err)
@@ -147,13 +146,12 @@ func AddNewSchedule(semester *Semester, items []*ScheduleItem, useTimespan int) 
 }
 
 func GetSchedulesInSemester(semesterDate string) (s []*Schedule, err error) {
-	o := orm.NewOrm()
 	_, err = o.QueryTable("schedule").Filter("semester_id", semesterDate).All(&s)
 	return
 }
 
 func GetScheduleItems(scheduleID int) (r []*ScheduleItem, err error) {
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("schedule_item").Filter("schedule_id", scheduleID).RelatedSel().All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"time"
-
-	"github.com/beego/beego/v2/client/orm"
 )
 
 type InstructedClazz struct {
@@ -25,7 +23,7 @@ func (i InstructedClazz) String() string {
 
 func AllInstructedClazzesForScheduling(semester *Semester) ([]*InstructedClazz, error) {
 	var r []*InstructedClazz
-	o := orm.NewOrm()
+
 	var instructs []int
 	_, err := o.Raw("SELECT instruct_id FROM instruct WHERE semester_id = ?", semester.StartDate).QueryRows(&instructs)
 	if err != nil {
@@ -63,7 +61,7 @@ func AllInstructedClazzesForScheduling(semester *Semester) ([]*InstructedClazz, 
 
 func AllInstructedClazzesForInstruct(instruct_id int) ([]*InstructedClazz, error) {
 	var r []*InstructedClazz
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("instructed_clazz").Filter("instruct_id", instruct_id).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -91,7 +89,7 @@ func AllInstructedClazzesForInstruct(instruct_id int) ([]*InstructedClazz, error
 }
 
 func AddInstructedClazz(c InstructedClazz) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddInstructedClazz %v\n", err)
@@ -101,7 +99,7 @@ func AddInstructedClazz(c InstructedClazz) error {
 }
 
 func DelInstructedClazz(c *Instruct) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelInstructedClazz %v\n", err)
 	return err
@@ -109,7 +107,7 @@ func DelInstructedClazz(c *Instruct) error {
 
 func TruncateInstructedClazz() error {
 	log.Println("TruncateInstructedClazz")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table instructed_clazz").Exec()
 	return err
 }

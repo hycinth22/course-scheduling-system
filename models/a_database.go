@@ -33,6 +33,7 @@ func init() {
 	if err := orm.RunSyncdb("default", false, true); err != nil {
 		panic(err)
 	}
+	o = orm.NewOrm()
 	log.Println(ListBackup())
 	log.Println(Backup())
 }

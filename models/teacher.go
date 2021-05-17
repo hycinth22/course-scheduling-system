@@ -22,7 +22,7 @@ type Teacher struct {
 
 func GetTeacher(id string) (*Teacher, error) {
 	t := &Teacher{Id: id}
-	o := orm.NewOrm()
+
 	err := o.Read(t)
 	if err != nil {
 		log.Printf("GetTeacher Err: %d, %v\n", err)
@@ -31,7 +31,7 @@ func GetTeacher(id string) (*Teacher, error) {
 }
 
 func AddTeacher(c Teacher) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddTimespan %v\n", err)
@@ -41,7 +41,7 @@ func AddTeacher(c Teacher) error {
 }
 
 func UpdateTeacher(c *Teacher) error {
-	o := orm.NewOrm()
+
 	_, err := o.Update(c)
 	if err != nil {
 		log.Printf("UpdateTeacher %v\n", err)
@@ -51,7 +51,7 @@ func UpdateTeacher(c *Teacher) error {
 }
 
 func DelTeacher(c *Teacher) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelTeacher %v\n", err)
 	return err
@@ -59,7 +59,7 @@ func DelTeacher(c *Teacher) error {
 
 func TruncateTeacher() error {
 	log.Println("TruncateTeacher")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table teacher").Exec()
 	return err
 }
@@ -79,7 +79,7 @@ func ImportTeacher(batch []*Teacher) error {
 
 func ListTeachers(offset, limit int) ([]*Teacher, int) {
 	var r []*Teacher
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("teacher").Offset(offset).Limit(limit).RelatedSel().All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -93,7 +93,7 @@ func ListTeachers(offset, limit int) ([]*Teacher, int) {
 
 func SearchTeachers(offset, limit int, search string) ([]*Teacher, int) {
 	var r []*Teacher
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("teacher_id__startswith", search).Or("teacher_id__endswith", search)
 	cond2 := orm.NewCondition().And("teacher_name__startswith", search).Or("teacher_name__endswith", search)
 	cond3 := orm.NewCondition().And("teacher_title__startswith", search).Or("teacher_title__endswith", search)
@@ -111,6 +111,8 @@ func SearchTeachers(offset, limit int, search string) ([]*Teacher, int) {
 	}
 	return r, int(cnt)
 }
+
+var o orm.Ormer
 
 func AllTeachersInColleges(coll *College) (r []*Teacher, err error) {
 	o := orm.NewOrm()

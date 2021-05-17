@@ -24,7 +24,7 @@ func GetConfig() (Config, error) {
 			SelectedSchedule: 0,
 		},
 	}
-	o := orm.NewOrm()
+
 	err := o.Read(&c, "id")
 	if err == orm.ErrNoRows {
 		err = SaveConfig(Config{
@@ -44,7 +44,7 @@ func SaveConfig(c Config) error {
 		Id:     1,
 		Config: c,
 	}
-	o := orm.NewOrm()
+
 	_, err := o.InsertOrUpdate(&wrap)
 	if err != nil {
 		log.Printf("SaveConfig Err: %d, %v\n", err)

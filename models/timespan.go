@@ -3,8 +3,6 @@ package models
 import (
 	"log"
 	"time"
-
-	"github.com/beego/beego/v2/client/orm"
 )
 
 type Timespan struct {
@@ -21,7 +19,7 @@ type Timespan struct {
 
 func AllTimespan() ([]*Timespan, error) {
 	var r []*Timespan
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("timespan").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -30,7 +28,7 @@ func AllTimespan() ([]*Timespan, error) {
 }
 
 func AddOrUpdateTimespan(c *Timespan) error {
-	o := orm.NewOrm()
+
 	_, err := o.InsertOrUpdate(c)
 	if err != nil {
 		log.Printf("AddOrUpdateTimespan %v\n", err)
@@ -40,7 +38,7 @@ func AddOrUpdateTimespan(c *Timespan) error {
 }
 
 func AddTimespan(c Timespan) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddTimespan %v\n", err)
@@ -50,14 +48,14 @@ func AddTimespan(c Timespan) error {
 }
 
 func DelTimespan(c *Timespan) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelCourse %v\n", err)
 	return err
 }
 
 func TruncateTimespan() error {
-	o := orm.NewOrm()
+
 	log.Println("TruncateTimespan")
 	_, err := o.Raw("truncate table timespan").Exec()
 	return err

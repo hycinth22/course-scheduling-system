@@ -26,7 +26,7 @@ func (i Instruct) String() string {
 }
 
 func AddInstruct(c Instruct) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddInstruct %v\n", err)
@@ -36,7 +36,7 @@ func AddInstruct(c Instruct) error {
 }
 
 func DelInstruct(c *Instruct) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelInstruct %v\n", err)
 	return err
@@ -44,7 +44,7 @@ func DelInstruct(c *Instruct) error {
 
 func TruncateInstruct() error {
 	log.Println("TruncateInstruct")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table instruct").Exec()
 	return err
 }
@@ -64,7 +64,7 @@ func ImportInstruct(batch []*Instruct) error {
 
 func ListInstructs(offset, limit int, semester string) ([]*Instruct, int) {
 	var r []*Instruct
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("instruct").Filter("semester_id", semester).Offset(offset).Limit(limit).RelatedSel().All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -78,7 +78,7 @@ func ListInstructs(offset, limit int, semester string) ([]*Instruct, int) {
 
 func SearchInstructs(offset, limit int, search string, semester string) ([]*Instruct, int) {
 	var r []*Instruct
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("teacher_id__startswith", search).Or("teacher_id__endswith", search)
 	cond2 := orm.NewCondition().And("teacher_name__startswith", search).Or("teacher_name__endswith", search)
 	cond3 := orm.NewCondition().And("teacher_title__startswith", search).Or("teacher_title__endswith", search)

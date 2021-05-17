@@ -19,7 +19,7 @@ type Clazzroom struct {
 
 func ListClazzrooms(offset, limit int) ([]*Clazzroom, int) {
 	var r []*Clazzroom
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("clazzroom").OrderBy("building", "room").Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -33,7 +33,7 @@ func ListClazzrooms(offset, limit int) ([]*Clazzroom, int) {
 
 func SearchClazzrooms(offset, limit int, search string) ([]*Clazzroom, int) {
 	var r []*Clazzroom
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("building__startswith", search).Or("building__endswith", search)
 	cond2 := orm.NewCondition().And("room__startswith", search).Or("room__endswith", search)
 	cond := cond1.OrCond(cond2)
@@ -52,7 +52,7 @@ func SearchClazzrooms(offset, limit int, search string) ([]*Clazzroom, int) {
 
 func GetClazzroom(id int) (*Clazzroom, error) {
 	c := &Clazzroom{Id: id}
-	o := orm.NewOrm()
+
 	err := o.Read(c)
 	if err != nil {
 		log.Printf("GetCourse Err: %d, %v\n", err)
@@ -62,7 +62,7 @@ func GetClazzroom(id int) (*Clazzroom, error) {
 
 func AllClazzroom() ([]*Clazzroom, error) {
 	var r []*Clazzroom
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("clazzroom").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -71,7 +71,7 @@ func AllClazzroom() ([]*Clazzroom, error) {
 }
 
 func AddClazzroom(c *Clazzroom) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(c)
 	if err != nil {
 		log.Printf("AddClazzroom %v\n", err)
@@ -81,14 +81,14 @@ func AddClazzroom(c *Clazzroom) error {
 }
 
 func UpdateClazzroom(c *Clazzroom) error {
-	o := orm.NewOrm()
+
 	_, err := o.Update(c)
 	log.Printf("UpdateClazzroom %v\n", err)
 	return err
 }
 
 func DelClazzroom(c *Clazzroom) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelClazzroom %v\n", err)
 	return err
@@ -96,7 +96,7 @@ func DelClazzroom(c *Clazzroom) error {
 
 func TruncateClazzroom() error {
 	log.Println("TruncateClazzroom")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table clazzroom").Exec()
 	return err
 }

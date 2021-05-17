@@ -3,8 +3,6 @@ package models
 import (
 	"log"
 	"time"
-
-	"github.com/beego/beego/v2/client/orm"
 )
 
 type Semester struct {
@@ -19,7 +17,7 @@ type Semester struct {
 
 func AllSemester() ([]*Semester, error) {
 	var r []*Semester
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("semester").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -28,7 +26,7 @@ func AllSemester() ([]*Semester, error) {
 }
 
 func AddSemester(c Semester) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddSemester %v\n", err)
@@ -38,7 +36,7 @@ func AddSemester(c Semester) error {
 }
 
 func DelSemester(c *Semester) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelSemester %v\n", err)
 	return err
@@ -46,7 +44,7 @@ func DelSemester(c *Semester) error {
 
 func TruncateSemester() error {
 	log.Println("TruncateSemester")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table semester").Exec()
 	return err
 }

@@ -25,7 +25,7 @@ func (c Clazz) String() string {
 }
 
 func AddClazz(c Clazz) error {
-	o := orm.NewOrm()
+
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddClazz %v\n", err)
@@ -35,7 +35,7 @@ func AddClazz(c Clazz) error {
 }
 
 func DelClazz(c *Clazz) error {
-	o := orm.NewOrm()
+
 	_, err := o.Delete(c)
 	log.Printf("DelClazz %v\n", err)
 	return err
@@ -43,7 +43,7 @@ func DelClazz(c *Clazz) error {
 
 func TruncateClazz() error {
 	log.Println("TruncateClazz")
-	o := orm.NewOrm()
+
 	_, err := o.Raw("truncate table clazz").Exec()
 	return err
 }
@@ -63,7 +63,7 @@ func ImportClazz(batch []*Clazz) error {
 
 func AllClazz() ([]*Clazz, error) {
 	var r []*Clazz
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("clazz").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -72,7 +72,7 @@ func AllClazz() ([]*Clazz, error) {
 }
 
 func AllClazzesInColleges(coll *College) (r []*Clazz, err error) {
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("clazz").Filter("college_id", coll.Id).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -82,7 +82,7 @@ func AllClazzesInColleges(coll *College) (r []*Clazz, err error) {
 
 func ListClazzes(offset, limit int) ([]*Clazz, int) {
 	var r []*Clazz
-	o := orm.NewOrm()
+
 	num, err := o.QueryTable("clazz").Offset(offset).Limit(limit).RelatedSel().All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -95,7 +95,7 @@ func ListClazzes(offset, limit int) ([]*Clazz, int) {
 }
 
 func SearchClazzes(offset, limit int, search string) (r []*Clazz, total int) {
-	o := orm.NewOrm()
+
 	cond1 := orm.NewCondition().And("clazz_id__startswith", search).Or("clazz_id__endswith", search)
 	cond2 := orm.NewCondition().And("clazz_name__startswith", search).Or("clazz_name__endswith", search)
 	cond3 := orm.NewCondition().And("college_id__startswith", search).Or("college_id__endswith", search)

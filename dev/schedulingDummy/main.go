@@ -57,7 +57,7 @@ func main() {
 	fillInstructedClazz(allInstructedClazz)
 	allClazzroom := dummy.ParseClazzroom()
 	allTimespan := dummy.ParseTimespan()
-	result := scheduling.GenerateSchedule(&scheduling.Params{
+	result, score := scheduling.GenerateSchedule(&scheduling.Params{
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
@@ -65,6 +65,11 @@ func main() {
 	f, err := os.Create("s.txt")
 	if err != nil {
 		fmt.Println(err)
+		return
+	}
+	_, err = fmt.Fprintf(f, "Score: %v\n", score)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 	for _, item := range result {

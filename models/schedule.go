@@ -15,6 +15,7 @@ type Schedule struct {
 	Semester    *Semester `orm:"column(semester_id);rel(fk);type(date)" json:"semester"`
 	UseTimespan int       `orm:"column(use_timespan)" json:"use_timespan"`
 	UseWeekday  int       `orm:"column(use_weekday)" json:"use_weekday"`
+	Score       float64   `orm:"column(score)" json:"score"`
 	// Attributes
 	Created time.Time `orm:"auto_now_add;type(datetime)" json:"-"`
 	Updated time.Time `orm:"auto_now;type(datetime)" json:"-"`
@@ -111,7 +112,7 @@ func DelSchedules(ids []int) error {
 	return err
 }
 
-func AddNewSchedule(semester *Semester, items []*ScheduleItem, useTimespan int) (s *Schedule, err error) {
+func AddNewSchedule(semester *Semester, items []*ScheduleItem, useTimespan int, score float64) (s *Schedule, err error) {
 	o, err := orm.NewOrm().Begin()
 	defer func() {
 		if x := recover(); x != nil {
@@ -126,6 +127,7 @@ func AddNewSchedule(semester *Semester, items []*ScheduleItem, useTimespan int) 
 	s = new(Schedule)
 	s.Semester = semester
 	s.UseTimespan = useTimespan
+	s.Score = score
 	id, err := o.Insert(s)
 	if err != nil {
 		panic(err)

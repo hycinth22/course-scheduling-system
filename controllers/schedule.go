@@ -74,12 +74,12 @@ func (this *ScheduleController) NewSchedule() {
 		log.Println(err)
 		return
 	}
-	result := scheduling.GenerateSchedule(&scheduling.Params{
+	result, score := scheduling.GenerateSchedule(&scheduling.Params{
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
 	})
-	s, err := models.AddNewSchedule(semester, result, len(allTimespan))
+	s, err := models.AddNewSchedule(semester, result, len(allTimespan), score)
 	if err != nil {
 		log.Println(err)
 		this.Ctx.Output.SetStatus(500)
@@ -175,17 +175,17 @@ func (this *ScheduleController) GetScheduleItems() {
 	}
 }
 
-func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, error) {
+func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, float64, error) {
 	sch, err := models.GetSchedule(id)
 	if err != nil {
-		return nil, err
+		return nil, 0.0, err
 	}
 	if sch == nil {
-		return nil, errors.New("not found")
+		return nil, 0.0, errors.New("not found")
 	}
 	items, err := models.GetScheduleItems(id)
 	if err != nil {
-		return nil, err
+		return nil, 0.0, err
 	}
 	result := views.NewScheduleItemsTableView(len(items))
 	const cntWeekday = 7
@@ -209,12 +209,14 @@ func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, error) {
 				result.ByTeacherPersonal[item.Instruct.Teacher.Id][timespan] = make(map[int]*models.ScheduleItem, cntWeekday)
 			}
 		}
+
 		// insert view data
 		result.ByClazz[item.Clazz.ClazzId][item.TimespanId-1][item.DayOfWeek] = item
 		result.ByDept[item.Instruct.Teacher.Dept.DeptId][item.TimespanId-1][item.DayOfWeek] = append(result.ByDept[item.Instruct.Teacher.Dept.DeptId][item.TimespanId-1][item.DayOfWeek], item)
 		result.ByTeacherPersonal[item.Instruct.Teacher.Id][item.TimespanId-1][item.DayOfWeek] = item
+
 	}
-	return result, nil
+	return result, sch.Score, nil
 }
 
 // @Title ScheduleGetItems
@@ -229,12 +231,15 @@ func (this *ScheduleController) GetScheduleItemsGroupView() {
 		this.Ctx.Output.SetStatus(400)
 		return
 	}
-	result, err := getScheduleGroupView(id)
+	items, score, err := getScheduleGroupView(id)
 	if err != nil {
 		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	this.Data["json"] = result
+	this.Data["json"] = map[string]interface{}{
+		"score": score,
+		"items": items,
+	}
 	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
@@ -260,7 +265,7 @@ func (this *ScheduleController) ScheduleDownloadStudentExcel() {
 		this.Ctx.Output.SetStatus(400)
 		return
 	}
-	result, err := getScheduleGroupView(id)
+	result, _, err := getScheduleGroupView(id)
 	if err != nil {
 		this.Ctx.Output.SetStatus(500)
 		return
@@ -314,7 +319,7 @@ func (this *ScheduleController) ScheduleDownloadTeacherExcel() {
 		this.Ctx.Output.SetStatus(400)
 		return
 	}
-	result, err := getScheduleGroupView(id)
+	result, _, err := getScheduleGroupView(id)
 	if err != nil {
 		this.Ctx.Output.SetStatus(500)
 		return
@@ -363,7 +368,7 @@ func (this *ScheduleController) ScheduleDownloadTeacherPersonalExcel() {
 		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	result, err := getScheduleGroupView(id)
+	result, _, err := getScheduleGroupView(id)
 	if err != nil {
 		this.Ctx.Output.SetStatus(500)
 		return

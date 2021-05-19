@@ -51,7 +51,7 @@ func NewGenerator(params *Params, config ConfigType) *Generator {
 
 var availableWeekday = []int{1, 2, 3, 4, 5}
 
-func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
+func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64) {
 	g.printParams()
 	config := eaopt.GAConfig{
 		NPops:        g.config.NumOfPopulations,
@@ -127,7 +127,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	var ga, err = config.NewGA()
 	if err != nil {
 		log.Println(err)
-		return nil
+		return nil, math.Inf(1)
 	}
 	// Run the GA
 	timeout = time.NewTimer(g.config.Timeout)
@@ -136,13 +136,13 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	})
 	if err != nil {
 		log.Println(err)
-		return nil
+		return nil, math.Inf(1)
 	}
 
 	// Final result
 	if len(ga.HallOfFame) < 1 {
 		log.Printf("We fail to find a solution after %d generations in %s\n", ga.Generations, ga.Age)
-		return nil
+		return nil, math.Inf(1)
 	}
 	if !ga.HallOfFame.IsSortedByFitness() {
 		ga.HallOfFame.SortByFitness()
@@ -150,7 +150,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 	result = ga.HallOfFame[0].Genome.(*GeneticSchedule)
 	if result.Invalidity() != 0.0 {
 		log.Printf("We find an invalid solution after %d generations in %s\n", ga.Generations, ga.Age)
-		return nil
+		return nil, math.Inf(1)
 	}
 	log.Printf("FINAL %d) Result -> \n"+
 		"%v \n"+
@@ -162,7 +162,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule) {
 		result.scores.s,
 		result.Invalidity(), ga.HallOfFame[0].Fitness)
 	log.Printf("Optimal solution obtained after %d generations in %s\n", ga.Generations, ga.Age)
-	return result
+	return result, ga.HallOfFame[0].Fitness
 }
 
 func (g *Generator) printParams() {

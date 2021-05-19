@@ -115,17 +115,7 @@ func SearchTeachers(offset, limit int, search string) ([]*Teacher, int) {
 var o orm.Ormer
 
 func AllTeachersInColleges(coll *College) (r []*Teacher, err error) {
-	o := orm.NewOrm()
-	var depts []*Department
-	num, err := o.QueryTable("department").Filter("college_id", coll.Id).All(&depts)
-	if err != nil {
-		log.Printf("Returned Rows Num: %d, %v\n", num, err)
-	}
-	var deptIDs []string
-	for _, d := range depts {
-		deptIDs = append(deptIDs, d.DeptId)
-	}
-	num, err = o.QueryTable("teacher").Filter("dept_id__in", deptIDs).All(&r)
+	num, err := o.QueryTable("teacher").Filter("Dept__college_id", coll.Id).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
 	}

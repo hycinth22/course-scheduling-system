@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	admin := web.NewNamespace("/admin",
+	api := web.NewNamespace("/api",
 		web.NSNamespace("/clazz", web.NSInclude(&controllers.ClazzController{})),
 		web.NSNamespace("/clazzroom", web.NSInclude(&controllers.ClazzroomController{})),
 		web.NSNamespace("/college", web.NSInclude(&controllers.CollegeController{})),
@@ -24,5 +24,5 @@ func init() {
 		web.NSNamespace("/user", web.NSInclude(&controllers.UserController{})),
 	)
 	view := web.NewNamespace("/view")
-	web.AddNamespace(admin, view)
+	web.AddNamespace(api, view)
 }

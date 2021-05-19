@@ -12,7 +12,7 @@ type Config struct {
 }
 
 type ConfigInDb struct {
-	Id int `orm:"pk;default:1"`
+	Id int `orm:"pk;default(1)"`
 	Config
 }
 

@@ -394,4 +394,13 @@ func init() {
 			Filters:          nil,
 			Params:           nil})
 
+	beego.GlobalControllerRouter["courseScheduling/controllers:UserController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:UserController"],
+		beego.ControllerComments{
+			Method:           "LoginState",
+			Router:           "/login_state",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
 }

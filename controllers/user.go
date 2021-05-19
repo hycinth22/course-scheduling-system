@@ -38,6 +38,17 @@ func (this *UserController) Login() {
 		if err != nil {
 			log.Println(err)
 		}
+		err = this.SetSession("username", username)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		err = this.SetSession("password", password)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 	} else {
 		this.Data["json"] = map[string]interface{}{
 			"code": -10001,
@@ -77,6 +88,32 @@ func (this *UserController) GetAll() {
 	err := this.ServeJSON()
 	if err != nil {
 		log.Println(err)
+		return
+	}
+}
+
+// @router /login_state [get]
+func (this *UserController) LoginState() {
+	username, ok1 := this.GetSession("username").(string)
+	password, ok2 := this.GetSession("password").(string)
+	if ok, u := models.CanLogin(username, password); ok1 && ok2 && ok {
+		this.Data["json"] = map[string]interface{}{
+			"code":     0,
+			"username": username,
+			"profile": map[string]interface{}{
+				"username": u.Username,
+				"role":     u.Role,
+				"lastTime": u.LastLogin,
+				"lastLoc":  u.LastLoc,
+			},
+		}
+	} else {
+		this.Data["json"] = map[string]interface{}{
+			"code": -10001,
+		}
+	}
+	err := this.ServeJSON()
+	if err != nil {
 		return
 	}
 }

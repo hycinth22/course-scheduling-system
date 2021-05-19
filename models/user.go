@@ -14,7 +14,7 @@ type User struct {
 	Role              string    `orm:"column(role)" json:"role"`
 	Status            int       `orm:"column(status)" json:"status"`
 	LastLogin         time.Time `orm:"column(last_login_time)" json:"last_login_time"`
-	LastLoc           string    `orm:"column(last_login_loc);default:'从未登陆'" json:"last_login_loc"`
+	LastLoc           string    `orm:"column(last_login_loc);default('从未登陆')" json:"last_login_loc"`
 	AssociatedTeacher *Teacher  `orm:"column(associated_teacher);null;rel(fk)" json:"associated_teacher"`
 	CreatedAt         time.Time `orm:"column(created_at);auto_now_add;type(datetime)" json:"created_at"`
 	UpdatedAt         time.Time `orm:"column(updated_at);auto_now;type(datetime)" json:"updated_at"`

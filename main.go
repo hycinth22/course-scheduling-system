@@ -14,6 +14,10 @@ func main() {
 		web.BConfig.WebConfig.DirectoryIndex = true
 		web.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
+	// session
+	web.BConfig.WebConfig.Session.SessionOn = true
+	web.BConfig.WebConfig.Session.SessionProvider = "file"
+	web.BConfig.WebConfig.Session.SessionProviderConfig = "./tmp"
 	// allow cors
 	web.InsertFilter("*", web.BeforeRouter, cors.Allow(&cors.Options{
 		AllowAllOrigins:  true,

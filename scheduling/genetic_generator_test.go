@@ -56,7 +56,7 @@ func BenchmarkGenerator_GenerateSchedule(b *testing.B) {
 	b.ResetTimer()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		_ = g.GenerateSchedule()
+		_, _ = g.GenerateSchedule()
 	}
 	b.StopTimer()
 }

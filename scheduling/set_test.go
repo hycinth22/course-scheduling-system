@@ -1,16 +1,12 @@
 package scheduling
 
-import (
-	"testing"
-)
-
+/*
 func Test_createHashSet(t *testing.T) {
 	if got := createHashSet(1); got == nil {
 		t.Errorf("createHashSet() = %v", got)
 	}
 }
 
-/*
 func Test_hashSet_Del(t *testing.T) {
 	type fields struct {
 		m map[interface{}]interface{}

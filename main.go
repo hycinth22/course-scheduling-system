@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+
 	// api docs
 	if web.BConfig.RunMode == "dev" {
 		web.BConfig.WebConfig.DirectoryIndex = true

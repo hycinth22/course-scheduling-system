@@ -7,6 +7,14 @@ type timespanInDay struct {
 	dayOfWeek int
 }
 
+func (t *timespanInDay) Equal(equal IEqual) bool {
+	r, ok := equal.(*timespanInDay)
+	if !ok {
+		return false
+	}
+	return t.timespan == r.timespan && t.dayOfWeek == r.dayOfWeek
+}
+
 type placement struct {
 	timespan  int
 	loc       int

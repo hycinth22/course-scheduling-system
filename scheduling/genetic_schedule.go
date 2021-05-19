@@ -130,7 +130,7 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 
 // Mutate swap two ScheduleItem's placement at 2 times.
 func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
-	const times = 2
+	const times = 1
 	// eaopt.MutPermute(X.items, times, rng)
 	if X.items.Len() <= 1 {
 		return
@@ -143,7 +143,8 @@ func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 }
 
 // Crossover GeneticSchedule with another by applying 1-ScheduleItem crossover.
-func (X *GeneticSchedule) Crossover(Y eaopt.Genome, _ *rand.Rand) {
-	eaopt.CrossERX(X.items, Y.(*GeneticSchedule).items)
-	// eaopt.CrossGNX(X.items, Y.(*GeneticSchedule).items, 1, rng)
+func (X *GeneticSchedule) Crossover(Y eaopt.Genome, rng *rand.Rand) {
+	// eaopt.CrossERX(X.items, Y.(*GeneticSchedule).items)
+	// eaopt.CrossGNX(X.items, Y.(*GeneticSchedule).items, 40, rng)
+	// eaopt.CrossCX(X.items, Y.(*GeneticSchedule).items)
 }

@@ -187,7 +187,7 @@ func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, float64, error
 	if err != nil {
 		return nil, 0.0, err
 	}
-	result := views.NewScheduleItemsTableView(len(items))
+	result := views.NewScheduleItemsTableView(len(items), sch.UseTimespan)
 	const cntWeekday = 7
 	for _, item := range items {
 		// create map
@@ -209,12 +209,11 @@ func getScheduleGroupView(id int) (*views.ScheduleItemsTableView, float64, error
 				result.ByTeacherPersonal[item.Instruct.Teacher.Id][timespan] = make(map[int]*models.ScheduleItem, cntWeekday)
 			}
 		}
-
 		// insert view data
 		result.ByClazz[item.Clazz.ClazzId][item.TimespanId-1][item.DayOfWeek] = item
 		result.ByDept[item.Instruct.Teacher.Dept.DeptId][item.TimespanId-1][item.DayOfWeek] = append(result.ByDept[item.Instruct.Teacher.Dept.DeptId][item.TimespanId-1][item.DayOfWeek], item)
 		result.ByTeacherPersonal[item.Instruct.Teacher.Id][item.TimespanId-1][item.DayOfWeek] = item
-
+		result.Entire[item.TimespanId-1][item.DayOfWeek] = append(result.Entire[item.TimespanId-1][item.DayOfWeek], item)
 	}
 	return result, sch.Score, nil
 }

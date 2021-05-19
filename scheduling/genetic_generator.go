@@ -40,10 +40,9 @@ func NewGenerator(params *Params, config ConfigType) *Generator {
 	for i := range g.params.AllTimespan {
 		g.timespanMap[g.params.AllTimespan[i].Id] = g.params.AllTimespan[i]
 	}
-	// g.p = NewSyncPool(1, g.cntLessons, 100)
 	g.p = &sync.Pool{
 		New: func() interface{} {
-			return make([]interface{}, 0, g.cntLessons)
+			return make([]IEqual, 0, g.cntLessons)
 		},
 	}
 	return g
@@ -58,12 +57,16 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 		PopSize:      g.config.SizeOfPopulation,
 		NGenerations: g.config.MaxGenerations,
 		HofSize:      1,
-		Model:        eaopt.ModMutationOnly{Strict: true},
 		ParallelEval: true,
 		Migrator:     eaopt.MigRing{NMigrants: 20},
 		MigFrequency: 5,
 		Speciator:    nil,
 		Logger:       nil,
+	}
+	config.Model = &eaopt.ModGenerational{
+		Selector:  eaopt.SelElitism{},
+		MutRate:   g.config.MutationRate,
+		CrossRate: g.config.CrossoverRate,
 	}
 	var timeout *time.Timer
 	var (
@@ -74,16 +77,21 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 	config.EarlyStop = func(ga *eaopt.GA) bool {
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		invalid := bestCandidate.Invalidity()
-		if invalid == 0.0 {
+		if invalid < 0.9 {
 			ga.Model = &eaopt.ModDownToSize{
 				NOffsprings: g.config.NumOfOffsprings,
-				SelectorA:   eaopt.SelTournament{NContestants: 5},
+				SelectorA:   eaopt.SelElitism{},
 				SelectorB:   eaopt.SelElitism{},
 				MutRate:     g.config.MutationRate,
 				CrossRate:   g.config.CrossoverRate,
 			}
 		} else {
-			ga.Model = &eaopt.ModMutationOnly{Strict: true}
+			ga.Model = &eaopt.ModGenerational{
+				Selector:  eaopt.SelElitism{},
+				MutRate:   g.config.MutationRate,
+				CrossRate: 0,
+			}
+			//ga.Model = &eaopt.ModMutationOnly{Strict: true}
 		}
 		select {
 		case <-timeout.C:
@@ -106,23 +114,24 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 			LastFitness = fitness
 			LastFitnessKeep = 0
 		}
-		if LastFitnessKeep == 0 {
-			_, err := bestCandidate.Evaluate()
-			if err != nil {
-				log.Println(err)
-				return
-			}
-			invalidity := bestCandidate.Invalidity()
 
-			log.Printf("%d) Result -> \n"+
-				"h:%+v s:%+v\n "+
-				"Invalidity:%.0f HowBad:%f\n",
-				ga.Generations,
-				// bestCandidate,
-				bestCandidate.scores.h,
-				bestCandidate.scores.s,
-				invalidity, ga.HallOfFame[0].Fitness)
+		//if LastFitnessKeep == 0 {
+		_, err := bestCandidate.Evaluate()
+		if err != nil {
+			log.Println(err)
+			return
 		}
+		invalidity := bestCandidate.Invalidity()
+
+		log.Printf("%d) Result -> \n"+
+			"h:%+v s:%+v\n "+
+			"Invalidity:%.0f HowBad:%f\n",
+			ga.Generations,
+			// bestCandidate,
+			bestCandidate.scores.h,
+			bestCandidate.scores.s,
+			invalidity, ga.HallOfFame[0].Fitness)
+		//}
 	}
 	var ga, err = config.NewGA()
 	if err != nil {

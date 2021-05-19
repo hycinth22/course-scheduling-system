@@ -405,15 +405,11 @@ func (this *ScheduleController) SelectSchedule() {
 		this.Ctx.Output.SetStatus(400)
 		return
 	}
-	c, err := models.GetConfig()
-	if err != nil {
-		log.Println(err)
-		this.Ctx.Output.SetStatus(500)
-		return
-	}
-	c.SelectedSchedule = schedule
-	c.SelectedSemester = semester
-	err = models.SaveConfig(c)
+	models.GlobalConfig.Lock()
+	models.GlobalConfig.SelectedSchedule = schedule
+	models.GlobalConfig.SelectedSemester = semester
+	models.GlobalConfig.Unlock()
+	err = models.GlobalConfig.SaveToDB()
 	if err != nil {
 		log.Println(err)
 		this.Ctx.Output.SetStatus(500)

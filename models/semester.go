@@ -17,7 +17,6 @@ type Semester struct {
 
 func AllSemester() ([]*Semester, error) {
 	var r []*Semester
-
 	num, err := o.QueryTable("semester").All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
@@ -60,4 +59,13 @@ func ImportSemester(batch []*Semester) error {
 		}
 	}
 	return nil
+}
+
+func (s *Semester) Expired() bool {
+	begin, err := time.Parse(`2006/1/2`, s.StartDate)
+	if err != nil {
+		panic(err)
+	}
+	end := begin.Add(7 * 24 * time.Hour * time.Duration(s.Weeks))
+	return end.Before(time.Now())
 }

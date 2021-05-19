@@ -322,6 +322,24 @@ func init() {
 			Filters:          nil,
 			Params:           nil})
 
+	beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"],
+		beego.ControllerComments{
+			Method:           "GetPastSemesterVisibility",
+			Router:           "/hide_past_semester_config",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"],
+		beego.ControllerComments{
+			Method:           "ChangePastSemesterVisibility",
+			Router:           "/hide_past_semester_config",
+			AllowHTTPMethods: []string{"put"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
 	beego.GlobalControllerRouter["courseScheduling/controllers:TeacherController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:TeacherController"],
 		beego.ControllerComments{
 			Method:           "List",

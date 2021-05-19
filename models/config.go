@@ -2,13 +2,37 @@ package models
 
 import (
 	"log"
+	"sync"
 
 	"github.com/beego/beego/v2/client/orm"
 )
 
 type Config struct {
-	SelectedSemester string
-	SelectedSchedule int
+	SelectedSemester   string
+	SelectedSchedule   int
+	HiddenPastSemester bool
+}
+
+type ConfigWithLock struct {
+	Config
+	sync.RWMutex
+}
+
+var GlobalConfig ConfigWithLock
+
+func init() {
+	var err error
+	err = GlobalConfig.ReadFromDB()
+	if err == orm.ErrNoRows {
+		GlobalConfig.Config = Config{
+			SelectedSemester: "",
+			SelectedSchedule: 0,
+		}
+		err = GlobalConfig.SaveToDB()
+	}
+	if err != nil {
+		panic(err)
+	}
 }
 
 type ConfigInDb struct {
@@ -16,7 +40,7 @@ type ConfigInDb struct {
 	Config
 }
 
-func GetConfig() (Config, error) {
+func (l *ConfigWithLock) ReadFromDB() error {
 	c := ConfigInDb{
 		Id: 1,
 		Config: Config{
@@ -24,27 +48,24 @@ func GetConfig() (Config, error) {
 			SelectedSchedule: 0,
 		},
 	}
-
 	err := o.Read(&c, "id")
-	if err == orm.ErrNoRows {
-		err = SaveConfig(Config{
-			SelectedSemester: "",
-			SelectedSchedule: 0,
-		})
-	}
 	if err != nil {
 		log.Printf("GetConfig Err: %d, %v\n", err)
-		return Config{}, err
+		return err
 	}
-	return c.Config, nil
+	GlobalConfig.Lock()
+	GlobalConfig.Config = c.Config
+	GlobalConfig.Unlock()
+	return nil
 }
 
-func SaveConfig(c Config) error {
+func (l *ConfigWithLock) SaveToDB() error {
+	GlobalConfig.RLock()
 	wrap := ConfigInDb{
 		Id:     1,
-		Config: c,
+		Config: GlobalConfig.Config,
 	}
-
+	GlobalConfig.RUnlock()
 	_, err := o.InsertOrUpdate(&wrap)
 	if err != nil {
 		log.Printf("SaveConfig Err: %d, %v\n", err)

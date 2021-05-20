@@ -27,10 +27,10 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	)
 	// ！！！硬约束条件检测开始！！！
 	hardTotal := X.Invalidity()
-	fit += 100000.0 * float64(hardTotal)
-	//if hardTotal > 0.0 {
-	//	return fit, nil
-	//}
+	if hardTotal > 0.0 {
+		fit += 100000.0 * float64(hardTotal)
+		// return fit, nil
+	}
 	// ！！！软约束条件检测开始！！！
 	const (
 		softScoreMax1     = 950.0

@@ -17,10 +17,6 @@ func normalizeFloat64(x, min, max float64) float64 {
 	return (x - min) / (max - min)
 }
 
-type pair struct {
-	first, second interface{}
-}
-
 func randomInts(k uint, min, max int, rng *rand.Rand) []int {
 	var ints = make([]int, k)
 	for i := 0; i < int(k); i++ {

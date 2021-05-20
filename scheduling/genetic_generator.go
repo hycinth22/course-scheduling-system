@@ -51,8 +51,6 @@ func NewGenerator(params *Params, config ConfigType) *Generator {
 var availableWeekday = []int{1, 2, 3, 4, 5}
 
 func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64) {
-	var stage = 1
-	var everStage2 = false
 	g.printParams()
 	config := eaopt.GAConfig{
 		NPops:        g.config.NumOfPopulations,
@@ -65,10 +63,12 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 		Speciator:    nil,
 		Logger:       nil,
 	}
-	config.Model = &eaopt.ModGenerational{
-		Selector:  eaopt.SelElitism{},
-		MutRate:   g.config.MutationRate,
-		CrossRate: g.config.CrossoverRate,
+	config.Model = &eaopt.ModDownToSize{
+		NOffsprings: g.config.NumOfOffsprings,
+		SelectorA:   eaopt.SelTournament{NContestants: 5},
+		SelectorB:   eaopt.SelElitism{},
+		MutRate:     g.config.MutationRate,
+		CrossRate:   g.config.CrossoverRate,
 	}
 	var timeout *time.Timer
 	var (
@@ -79,35 +79,13 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 	config.EarlyStop = func(ga *eaopt.GA) bool {
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		invalid := bestCandidate.Invalidity()
-		if invalid == 0 {
-			//ga.Model = &eaopt.ModDownToSize{
-			//	NOffsprings: g.config.NumOfOffsprings,
-			//	SelectorA:   eaopt.SelElitism{},
-			//	SelectorB:   eaopt.SelElitism{},
-			//	MutRate:     g.config.MutationRate,
-			//	CrossRate:   g.config.CrossoverRate,
-			//}
-			//ga.Model = &eaopt.ModSteadyState{
-			//	Selector:  eaopt.SelElitism{},
-			//	MutRate:   g.config.MutationRate,
-			//	CrossRate:   g.config.CrossoverRate,
-			//	KeepBest: true,
-			//}
+		if invalid != 0 {
 			ga.Model = &eaopt.ModGenerational{
-				Selector:  eaopt.SelElitism{},
+				Selector:  eaopt.SelTournament{NContestants: 5},
 				MutRate:   g.config.MutationRate,
 				CrossRate: g.config.CrossoverRate,
 			}
-			stage = 2
-			everStage2 = true
 		} else {
-			stage = 1
-			/*			ga.Model = &eaopt.ModGenerational{
-						Selector:  eaopt.SelElitism{},
-						MutRate:   g.config.MutationRate,
-						CrossRate: g.config.CrossoverRate,
-					}*/
-			//ga.Model = &eaopt.ModMutationOnly{Strict: true}
 			ga.Model = &eaopt.ModDownToSize{
 				NOffsprings: g.config.NumOfOffsprings,
 				SelectorA:   eaopt.SelElitism{},
@@ -136,13 +114,6 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 		} else {
 			LastFitness = fitness
 			LastFitnessKeep = 0
-		}
-
-		//if LastFitnessKeep == 0 {
-		_, err := bestCandidate.Evaluate()
-		if err != nil {
-			log.Println(err)
-			return
 		}
 		invalidity := bestCandidate.Invalidity()
 		if invalidity > 0 {

@@ -28,7 +28,7 @@ func init() {
 		CrossoverRate: 0.1,
 
 		NumOfPopulations: 2,
-		SizeOfPopulation: 200,
+		SizeOfPopulation: 100,
 		NumOfOffsprings:  25,
 
 		MigrateAfterNGenerations: 200,

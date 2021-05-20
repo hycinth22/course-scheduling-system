@@ -2,10 +2,28 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"os"
+	"time"
 
 	"courseScheduling/models"
 	"courseScheduling/scheduling"
 )
+
+var file *os.File
+
+func init() {
+	var err error
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	file, err = ioutil.TempFile(wd, "example.*.txt")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(file.Name())
+}
 
 func main() {
 	// allCourses, err := models.AllCourses()
@@ -29,6 +47,8 @@ func main() {
 	}
 	//log.SetOutput(f)
 	for i := 0; i < 100; i++ {
+		fmt.Fprintln(file, i, ":")
+		begin := time.Now()
 		result, score := scheduling.GenerateSchedule(&scheduling.Params{
 			AllInstructedClazz: allInstructedClazz,
 			AllClazzroom:       allClazzroom,
@@ -39,5 +59,8 @@ func main() {
 			fmt.Println(err)
 			return
 		}
+		end := time.Now()
+		costTime := end.Sub(begin)
+		fmt.Fprintln(file, i, score, costTime)
 	}
 }

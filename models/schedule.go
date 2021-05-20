@@ -133,6 +133,9 @@ func AddNewSchedule(semester *Semester, items []*ScheduleItem, useTimespan int, 
 		panic(err)
 	}
 	for _, item := range items {
+		if item.ScheduleId == -1 {
+			continue
+		}
 		item.ScheduleItemId = 0
 		item.ScheduleId = int(id)
 		_, err := o.Insert(item)

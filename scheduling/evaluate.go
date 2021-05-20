@@ -7,10 +7,10 @@ import (
 	"github.com/montanaflynn/stats"
 )
 
-type ScoreHard [3]float64
+type ScoreHard [3]int
 
 func (s ScoreHard) String() string {
-	return fmt.Sprintf("[%.4f %.4f %.4f]", s[0], s[1], s[2])
+	return fmt.Sprintf("[%d %d %d]", s[0], s[1], s[2])
 }
 
 type ScoreSoft [4]float64
@@ -27,8 +27,8 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	)
 	// ！！！硬约束条件检测开始！！！
 	hardTotal := X.Invalidity()
-	if hardTotal > 0 {
-		fit += 100000.0 * hardTotal
+	fit += 100000.0 * float64(hardTotal)
+	if hardTotal > 0.0 {
 		return fit, nil
 	}
 	// ！！！软约束条件检测开始！！！

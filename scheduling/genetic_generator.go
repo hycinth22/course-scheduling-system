@@ -51,6 +51,8 @@ func NewGenerator(params *Params, config ConfigType) *Generator {
 var availableWeekday = []int{1, 2, 3, 4, 5}
 
 func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64) {
+	var stage = 1
+	var everStage2 = false
 	g.printParams()
 	config := eaopt.GAConfig{
 		NPops:        g.config.NumOfPopulations,
@@ -77,7 +79,35 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 	config.EarlyStop = func(ga *eaopt.GA) bool {
 		bestCandidate := ga.HallOfFame[0].Genome.(*GeneticSchedule)
 		invalid := bestCandidate.Invalidity()
-		if invalid < 0.9 {
+		if invalid == 0 {
+			//ga.Model = &eaopt.ModDownToSize{
+			//	NOffsprings: g.config.NumOfOffsprings,
+			//	SelectorA:   eaopt.SelElitism{},
+			//	SelectorB:   eaopt.SelElitism{},
+			//	MutRate:     g.config.MutationRate,
+			//	CrossRate:   g.config.CrossoverRate,
+			//}
+			//ga.Model = &eaopt.ModSteadyState{
+			//	Selector:  eaopt.SelElitism{},
+			//	MutRate:   g.config.MutationRate,
+			//	CrossRate:   g.config.CrossoverRate,
+			//	KeepBest: true,
+			//}
+			ga.Model = &eaopt.ModGenerational{
+				Selector:  eaopt.SelElitism{},
+				MutRate:   g.config.MutationRate,
+				CrossRate: g.config.CrossoverRate,
+			}
+			stage = 2
+			everStage2 = true
+		} else {
+			stage = 1
+			/*			ga.Model = &eaopt.ModGenerational{
+						Selector:  eaopt.SelElitism{},
+						MutRate:   g.config.MutationRate,
+						CrossRate: g.config.CrossoverRate,
+					}*/
+			//ga.Model = &eaopt.ModMutationOnly{Strict: true}
 			ga.Model = &eaopt.ModDownToSize{
 				NOffsprings: g.config.NumOfOffsprings,
 				SelectorA:   eaopt.SelElitism{},
@@ -85,13 +115,6 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 				MutRate:     g.config.MutationRate,
 				CrossRate:   g.config.CrossoverRate,
 			}
-		} else {
-			ga.Model = &eaopt.ModGenerational{
-				Selector:  eaopt.SelElitism{},
-				MutRate:   g.config.MutationRate,
-				CrossRate: 0,
-			}
-			//ga.Model = &eaopt.ModMutationOnly{Strict: true}
 		}
 		select {
 		case <-timeout.C:
@@ -122,15 +145,23 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 			return
 		}
 		invalidity := bestCandidate.Invalidity()
-
+		if invalidity > 0 {
+			ga.Model = &eaopt.ModDownToSize{
+				NOffsprings: g.config.NumOfOffsprings,
+				SelectorA:   eaopt.SelElitism{},
+				SelectorB:   eaopt.SelElitism{},
+				MutRate:     g.config.MutationRate,
+				CrossRate:   g.config.CrossoverRate,
+			}
+		}
 		log.Printf("%d) Result -> \n"+
 			"h:%+v s:%+v\n "+
-			"Invalidity:%.0f HowBad:%f\n",
+			"Invalidity:%d HowBad:%f\n %d %v",
 			ga.Generations,
 			// bestCandidate,
 			bestCandidate.scores.h,
 			bestCandidate.scores.s,
-			invalidity, ga.HallOfFame[0].Fitness)
+			invalidity, ga.HallOfFame[0].Fitness, stage, everStage2)
 		//}
 	}
 	var ga, err = config.NewGA()
@@ -164,7 +195,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 	log.Printf("FINAL %d) Result -> \n"+
 		"%v \n"+
 		"h:%+v s:%+v\n "+
-		"Invalidity:%.0f HowBad:%f\n",
+		"Invalidity:%d HowBad:%f\n",
 		ga.Generations,
 		result,
 		result.scores.h,

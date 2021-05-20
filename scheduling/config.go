@@ -20,14 +20,14 @@ var DefaultConfig ConfigType
 func init() {
 	DefaultConfig = ConfigType{
 		MaxGenerations:        10e9,
-		Timeout:               15 * time.Second,
-		StopWhenFitnessKeep:   30,
+		Timeout:               30 * time.Second,
+		StopWhenFitnessKeep:   100,
 		FitnessJudgePrecision: 0.1,
 
 		MutationRate:  0.95,
-		CrossoverRate: 0.0001,
+		CrossoverRate: 0.00,
 
-		NumOfPopulations: 1,
+		NumOfPopulations: 2,
 		SizeOfPopulation: 200,
 		NumOfOffsprings:  25,
 

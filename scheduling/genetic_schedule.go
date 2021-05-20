@@ -145,6 +145,6 @@ func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 // Crossover GeneticSchedule with another by applying 1-ScheduleItem crossover.
 func (X *GeneticSchedule) Crossover(Y eaopt.Genome, rng *rand.Rand) {
 	// eaopt.CrossERX(X.items, Y.(*GeneticSchedule).items)
-	// eaopt.CrossGNX(X.items, Y.(*GeneticSchedule).items, 40, rng)
+	eaopt.CrossGNX(X.items, Y.(*GeneticSchedule).items, 2, rng)
 	// eaopt.CrossCX(X.items, Y.(*GeneticSchedule).items)
 }

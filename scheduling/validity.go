@@ -1,5 +1,7 @@
 package scheduling
 
+import "courseScheduling/models"
+
 type ID1 struct {
 	timespanInDay
 	instructID int
@@ -27,10 +29,11 @@ func (t *ID3) Equal(equal IEqual) bool {
 	return t.timespan == r.timespan && t.dayOfWeek == r.dayOfWeek
 }
 
-func (X *GeneticSchedule) Invalidity() (total float64) {
+func (X *GeneticSchedule) Invalidity() (total int) {
 	pool := X.parent.p
+	var t1, t2, t3 *models.ScheduleItem
 	// 一个老师在同一时间只能安排一门课程，但可以同时为多个班级在同一教室上同一门课
-	var cnt0 = 0.0
+	var cnt0 = 0
 	//log.Printf("---BBBBB-----")
 	for _, items4T := range X.queryByTeacher {
 		//log.Printf(teacher)
@@ -45,6 +48,7 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 				if v.instructID != item.Instruct.InstructId || v.roomID != item.Clazzroom.Id {
 					// log.Println("detect against h1", item, v)
 					cnt0++
+					t1, t2, t3 = item, t1, t2
 				}
 			} else {
 				all.Insert(key)
@@ -56,7 +60,7 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 	//log.Printf("---EEEEEEEE-----", cnt0)
 	X.scores.h[0] = cnt0
 	// 一个班级在同一时间只能安排一门课程
-	var cnt1 = 0.0
+	var cnt1 = 0
 	for _, items4C := range X.queryByClazz {
 		all := createSliceSet(pool)
 		// var all = createSliceSet(len(items4C))
@@ -66,6 +70,7 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 			if all.Has(key) {
 				//log.Println("detect against h2")
 				cnt1++
+				t1, t2, t3 = item, t1, t2
 			}
 			all.Insert(key)
 		}
@@ -73,7 +78,7 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 	}
 	X.scores.h[1] = cnt1
 	// 一个教室在同一时间只能安排一门课程，但可以有多个班级在同个教室一起上课
-	var cnt2 = 0.0
+	var cnt2 = 0
 	for _, items4CR := range X.queryByClazzroom {
 		all := createSliceSet(pool)
 		// var all = createSliceSet(len(items4CR))
@@ -85,6 +90,7 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 				if val.(*ID3).instructID != item.Instruct.InstructId {
 					// log.Println("detect against h3")
 					cnt2++
+					t1, t2, t3 = item, t1, t2
 				}
 			} else {
 				all.Insert(key)
@@ -93,5 +99,20 @@ func (X *GeneticSchedule) Invalidity() (total float64) {
 		all.Free()
 	}
 	X.scores.h[2] = cnt2
+	if cnt0+cnt1+cnt2 == 1 && t1 != nil {
+		t1.ScheduleId = -1
+		return 0
+	}
+	if cnt0+cnt1+cnt2 == 2 && t1 != nil && t2 != nil {
+		t1.ScheduleId = -1
+		t2.ScheduleId = -1
+		return 0
+	}
+	if cnt0+cnt1+cnt2 == 3 && t1 != nil && t2 != nil && t3 != nil {
+		t1.ScheduleId = -1
+		t2.ScheduleId = -1
+		t3.ScheduleId = -1
+		return 0
+	}
 	return cnt0 + cnt1 + cnt2
 }

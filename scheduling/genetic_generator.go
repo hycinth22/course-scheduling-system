@@ -18,7 +18,7 @@ type Params struct {
 }
 
 type Generator struct {
-	params *Params
+	Params *Params
 
 	cntLessons   int
 	allPlacement []placement
@@ -30,15 +30,15 @@ type Generator struct {
 }
 
 func NewGenerator(params *Params, config ConfigType) *Generator {
-	g := &Generator{params: params, config: config}
+	g := &Generator{Params: params, config: config}
 	g.cntLessons = 0
 	for i := range params.AllInstructedClazz {
 		g.cntLessons += params.AllInstructedClazz[i].Instruct.Course.LessonsPerWeek
 	}
-	g.allPlacement = product2Placement(g.params.AllClazzroom, g.params.AllTimespan, availableWeekday)
-	g.timespanMap = make(map[int]*models.Timespan, len(g.params.AllTimespan))
-	for i := range g.params.AllTimespan {
-		g.timespanMap[g.params.AllTimespan[i].Id] = g.params.AllTimespan[i]
+	g.allPlacement = product2Placement(g.Params.AllClazzroom, g.Params.AllTimespan, availableWeekday)
+	g.timespanMap = make(map[int]*models.Timespan, len(g.Params.AllTimespan))
+	for i := range g.Params.AllTimespan {
+		g.timespanMap[g.Params.AllTimespan[i].Id] = g.Params.AllTimespan[i]
 	}
 	g.p = &sync.Pool{
 		New: func() interface{} {
@@ -156,12 +156,12 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 		}
 		log.Printf("%d) Result -> \n"+
 			"h:%+v s:%+v\n "+
-			"Invalidity:%d HowBad:%f\n %d %v",
+			"Invalidity:%d HowBad:%f\n",
 			ga.Generations,
 			// bestCandidate,
 			bestCandidate.scores.h,
 			bestCandidate.scores.s,
-			invalidity, ga.HallOfFame[0].Fitness, stage, everStage2)
+			invalidity, ga.HallOfFame[0].Fitness)
 		//}
 	}
 	var ga, err = config.NewGA()
@@ -206,7 +206,7 @@ func (g *Generator) GenerateSchedule() (result *GeneticSchedule, float64 float64
 }
 
 func (g *Generator) printParams() {
-	params := g.params
+	params := g.Params
 	log.Println("AllInstructs:")
 	for _, item := range params.AllInstructedClazz {
 		log.Printf("%+v", item)

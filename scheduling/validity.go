@@ -1,6 +1,10 @@
 package scheduling
 
-import "courseScheduling/models"
+import (
+	"math/rand"
+
+	"courseScheduling/models"
+)
 
 type ID1 struct {
 	timespanInDay
@@ -88,7 +92,10 @@ func (X *GeneticSchedule) Invalidity() (total int) {
 			val, exist := all.Get(key)
 			if exist {
 				if val.(*ID3).instructID != item.Instruct.InstructId {
-					// log.Println("detect against h3")
+					item.Clazzroom.Id = X.parent.Params.AllClazzroom[rand.Intn(len(X.parent.Params.AllClazzroom))].Id
+					if cnt0 == 0 && cnt1 == 0 && cnt2 == 0 {
+						//log.Println("detect against h3", item, val.(*ID3).instructID)
+					}
 					cnt2++
 					t1, t2, t3 = item, t1, t2
 				}
@@ -99,20 +106,22 @@ func (X *GeneticSchedule) Invalidity() (total int) {
 		all.Free()
 	}
 	X.scores.h[2] = cnt2
-	if cnt0+cnt1+cnt2 == 1 && t1 != nil {
-		t1.ScheduleId = -1
+	_ = t3
+	if cnt0+cnt1 == 0 && cnt2 == 1 && t1 != nil {
+		//t1.ScheduleId = -1
+		t1.Clazzroom.Id = X.parent.Params.AllClazzroom[rand.Intn(len(X.parent.Params.AllClazzroom))].Id
 		return 0
 	}
-	if cnt0+cnt1+cnt2 == 2 && t1 != nil && t2 != nil {
-		t1.ScheduleId = -1
-		t2.ScheduleId = -1
-		return 0
-	}
-	if cnt0+cnt1+cnt2 == 3 && t1 != nil && t2 != nil && t3 != nil {
-		t1.ScheduleId = -1
-		t2.ScheduleId = -1
-		t3.ScheduleId = -1
-		return 0
-	}
+	//if cnt0+cnt1+cnt2 == 2 && t1 != nil && t2 != nil {
+	//	t1.ScheduleId = -1
+	//	t2.ScheduleId = -1
+	//	return 0
+	//}
+	//if cnt0+cnt1+cnt2 == 3 && t1 != nil && t2 != nil && t3 != nil {
+	//	t1.ScheduleId = -1
+	//	t2.ScheduleId = -1
+	//	t3.ScheduleId = -1
+	//	return 0
+	//}
 	return cnt0 + cnt1 + cnt2
 }

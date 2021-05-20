@@ -35,5 +35,5 @@ func init() {
 	}
 	o = orm.NewOrm()
 	log.Println(ListBackup())
-	log.Println(Backup())
+	//log.Println(Backup())
 }

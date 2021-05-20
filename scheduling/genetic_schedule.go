@@ -41,7 +41,7 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 	placeSeq := randomInts(uint(cntNeedToAlloc), 0, len(g.allPlacement)-1, rng)
 	// generate ScheduleItems
 	var k = 0
-	for _, instructedClazz := range g.params.AllInstructedClazz {
+	for _, instructedClazz := range g.Params.AllInstructedClazz {
 		for cnt := 0; cnt < instructedClazz.Instruct.Course.LessonsPerWeek; cnt++ {
 			seq := placeSeq[k]
 			item := &models.ScheduleItem{
@@ -59,10 +59,10 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 		}
 	}
 	// generate index
-	queryByTeacher := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz))
-	queryByClazz := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz))
-	queryByClazzroom := make(map[int][]*models.ScheduleItem, len(g.params.AllClazzroom))
-	queryByInstructedClazz := make(map[string][]*models.ScheduleItem, len(g.params.AllInstructedClazz))
+	queryByTeacher := make(map[string][]*models.ScheduleItem, len(g.Params.AllInstructedClazz))
+	queryByClazz := make(map[string][]*models.ScheduleItem, len(g.Params.AllInstructedClazz))
+	queryByClazzroom := make(map[int][]*models.ScheduleItem, len(g.Params.AllClazzroom))
+	queryByInstructedClazz := make(map[string][]*models.ScheduleItem, len(g.Params.AllInstructedClazz))
 	for _, item := range scheduleItems {
 		queryByTeacher[item.Instruct.Teacher.Id] = append(queryByTeacher[item.Instruct.Teacher.Id], item)
 		queryByClazz[item.Clazz.ClazzId] = append(queryByClazz[item.Clazz.ClazzId], item)
@@ -81,7 +81,7 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 	s := &GeneticSchedule{
 		parent:                 g,
 		items:                  scheduleItems,
-		allTimespan:            g.params.AllTimespan,
+		allTimespan:            g.Params.AllTimespan,
 		availableWeekday:       availableWeekday,
 		queryByTeacher:         queryByTeacher,
 		queryByClazz:           queryByClazz,
@@ -142,9 +142,21 @@ func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 	}
 }
 
-// Crossover GeneticSchedule with another by applying 1-ScheduleItem crossover.
+// Crossover GeneticSchedule with another by applying ScheduleItem crossover.
 func (X *GeneticSchedule) Crossover(Y eaopt.Genome, rng *rand.Rand) {
-	// eaopt.CrossERX(X.items, Y.(*GeneticSchedule).items)
-	eaopt.CrossGNX(X.items, Y.(*GeneticSchedule).items, 2, rng)
-	// eaopt.CrossCX(X.items, Y.(*GeneticSchedule).items)
+	const times = 5
+	// eaopt.MutPermute(X.items, times, rng)
+	if X.items.Len() <= 1 {
+		return
+	}
+	for i := 0; i < times; i++ {
+		// Choose two items randomly
+		var ids = randomInts(2, 0, X.items.Len(), rng)
+		i, j := ids[0], ids[1]
+		if rng.Float64() < 0.5 {
+			X.items[i].TimespanId, Y.(*GeneticSchedule).items[j].TimespanId = Y.(*GeneticSchedule).items[j].TimespanId, X.items[i].TimespanId
+		} else {
+			X.items[i].Clazzroom.Id, Y.(*GeneticSchedule).items[j].Clazzroom.Id = Y.(*GeneticSchedule).items[j].Clazzroom.Id, X.items[i].Clazzroom.Id
+		}
+	}
 }

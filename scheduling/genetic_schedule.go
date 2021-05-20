@@ -128,27 +128,25 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 	}
 }
 
-// Mutate swap two ScheduleItem's placement at 2 times.
+// Mutate two ScheduleItem's placement
 func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 	const times = 1
-	// eaopt.MutPermute(X.items, times, rng)
 	if X.items.Len() <= 1 {
 		return
 	}
 	for i := 0; i < times; i++ {
-		// Choose two items randomly
-		var ids = randomInts(2, 0, X.items.Len(), rng)
-		X.items.Swap(ids[0], ids[1])
+		item := X.items[rng.Intn(len(X.items))]
+		item.TimespanId = X.parent.Params.AllTimespan[rng.Intn(len(X.parent.Params.AllTimespan))].Id
+		item.DayOfWeek = availableWeekday[rng.Intn(len(availableWeekday))]
 	}
 }
 
 // Crossover GeneticSchedule with another by applying ScheduleItem crossover.
 func (X *GeneticSchedule) Crossover(Y eaopt.Genome, rng *rand.Rand) {
-	const times = 5
-	// eaopt.MutPermute(X.items, times, rng)
 	if X.items.Len() <= 1 {
 		return
 	}
+	const times = 2
 	for i := 0; i < times; i++ {
 		// Choose two items randomly
 		var ids = randomInts(2, 0, X.items.Len(), rng)

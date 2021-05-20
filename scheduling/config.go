@@ -19,7 +19,7 @@ var DefaultConfig ConfigType
 
 func init() {
 	DefaultConfig = ConfigType{
-		MaxGenerations:        10e9,
+		MaxGenerations:        10e6,
 		Timeout:               15 * time.Second,
 		StopWhenFitnessKeep:   50,
 		FitnessJudgePrecision: 0.1,

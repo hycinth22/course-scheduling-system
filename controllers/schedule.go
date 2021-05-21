@@ -276,7 +276,7 @@ func (this *ScheduleController) ScheduleDownloadStudentExcel() {
 		this.Ctx.Output.SetStatus(500)
 		return
 	}
-	tmpfile, err := ioutil.TempFile("", "teacher_table_*.xls")
+	tmpfile, err := ioutil.TempFile("", "student_table_*.xls")
 	if err != nil {
 		this.Ctx.Output.SetStatus(500)
 		return

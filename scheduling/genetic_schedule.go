@@ -131,7 +131,7 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 // Mutate two ScheduleItem's placement
 func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 	const times = 1
-	if X.items.Len() <= 1 {
+	if X.items.Len() <= 2 {
 		return
 	}
 	for i := 0; i < times; i++ {

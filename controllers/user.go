@@ -34,11 +34,13 @@ func (this *UserController) Login() {
 				"lastLoc":  u.LastLoc,
 			},
 		}
-		err := models.UpdateLogin(u, time.Now(), getIPLoc(this.Ctx.Input.IP()))
-		if err != nil {
-			log.Println(err)
-		}
-		err = this.SetSession("username", username)
+		go func() {
+			err := models.UpdateLogin(u, time.Now(), getIPLoc(this.Ctx.Input.IP()))
+			if err != nil {
+				log.Println(err)
+			}
+		}()
+		err := this.SetSession("username", username)
 		if err != nil {
 			log.Println(err)
 			return

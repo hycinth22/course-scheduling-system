@@ -1,14 +1,25 @@
 package scheduling
 
-import "courseScheduling/models"
+import (
+	"courseScheduling/models"
+)
 
-func GenerateSchedule(params *Params) ([]*models.ScheduleItem, float64) {
-	var (
-		sch   *GeneticSchedule
-		score float64
-	)
-	for sch == nil {
-		sch, score = NewGenerator(params, DefaultConfig).GenerateSchedule()
+func GenerateSchedule(params *Params) (sch []*models.ScheduleItem, score float64) {
+	var gsch *GeneticSchedule
+	for gsch == nil {
+		gsch, score = NewGenerator(params, DefaultConfig).GenerateSchedule()
 	}
-	return sch.items, score
+	sch = make([]*models.ScheduleItem, gsch.items.Len())
+	for i := range sch {
+		sch[i] = &models.ScheduleItem{
+			ScheduleItemId: 0, // keep empty, filled by models package
+			ScheduleId:     0, // keep empty, filled by models package
+			Instruct:       &models.Instruct{InstructId: gsch.items[i].InstructID},
+			Clazz:          &models.Clazz{ClazzId: gsch.items[i].ClassID},
+			Clazzroom:      &models.Clazzroom{Id: gsch.items[i].ClassroomID},
+			TimespanId:     gsch.items[i].TimespanID,
+			DayOfWeek:      gsch.items[i].DayOfWeek,
+		}
+	}
+	return
 }

@@ -44,8 +44,8 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	costTimespan := 0.0
 	cntKaoshi := 0
 	for i := range X.items {
-		if X.items[i].Instruct.Course.Kind == "必修" || X.items[i].Instruct.Course.ExamMode == "考试" {
-			timespanID := X.items[i].TimespanId
+		if X.items[i].TendToObtainDayTimespan {
+			timespanID := X.items[i].TimespanID
 			pri := X.parent.timespanMap[timespanID].Priority
 			costTimespan += float64(pri)
 			cntKaoshi++
@@ -81,8 +81,8 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 			continue
 		}
 		for i := 1; i < len(items); i++ {
-			theTime := (items[i].DayOfWeek-1)*maxTimespan + items[i].TimespanId
-			prevTime := (items[i-1].DayOfWeek-1)*maxTimespan + items[i-1].TimespanId
+			theTime := (items[i].DayOfWeek-1)*maxTimespan + items[i].TimespanID
+			prevTime := (items[i-1].DayOfWeek-1)*maxTimespan + items[i-1].TimespanID
 			distance := theTime - prevTime
 			oneDensity += 1.0 - float64(distance)/maxDistance
 		}
@@ -106,7 +106,7 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	lenD := len(X.availableWeekday)
 	cntInTD := make([]float64, lenT*lenD)
 	for i := range X.items {
-		cntInTD[(X.items[i].DayOfWeek-1)+lenD*(X.items[i].TimespanId-1)]++
+		cntInTD[(X.items[i].DayOfWeek-1)+lenD*(X.items[i].TimespanID-1)]++
 	}
 	sdevCntInTD, err := stats.StandardDeviation(cntInTD)
 	if err != nil {
@@ -153,7 +153,7 @@ func (X *GeneticSchedule) CalcSdevForTD() (sdev float64, err error) {
 	lenD := len(X.availableWeekday)
 	cntInTD := make([]float64, lenT*lenD)
 	for i := range X.items {
-		cntInTD[(X.items[i].DayOfWeek-1)+lenD*(X.items[i].TimespanId-1)]++
+		cntInTD[(X.items[i].DayOfWeek-1)+lenD*(X.items[i].TimespanID-1)]++
 	}
 	sdev, err = stats.StandardDeviation(cntInTD)
 	if err != nil {

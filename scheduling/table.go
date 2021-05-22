@@ -4,7 +4,6 @@ import (
 	"log"
 	"strings"
 
-	"courseScheduling/models"
 	"github.com/modood/table"
 )
 
@@ -20,12 +19,12 @@ type TableRow struct {
 
 func GeneticSchedule2String(s *GeneticSchedule) string {
 	// [timespan][week][index]
-	t := make([][][]*models.ScheduleItem, len(s.allTimespan)+1) // 1-len(s.allTimespan), 0 is unused
+	t := make([][][]*GeneticScheduleItem, len(s.allTimespan)+1) // 1-len(s.allTimespan), 0 is unused
 	for i := range t {
-		t[i] = make([][]*models.ScheduleItem, 8) // 1-7, 0 is unused
+		t[i] = make([][]*GeneticScheduleItem, 8) // 1-7, 0 is unused
 	}
 	for _, item := range s.items {
-		if item.TimespanId <= 0 || item.TimespanId > len(s.allTimespan) {
+		if item.TimespanID <= 0 || item.TimespanID > len(s.allTimespan) {
 			log.Println("invalid TimespanId")
 			continue
 		}
@@ -33,7 +32,7 @@ func GeneticSchedule2String(s *GeneticSchedule) string {
 			log.Println("invalid DayOfWeek")
 			continue
 		}
-		t[item.TimespanId][item.DayOfWeek] = append(t[item.TimespanId][item.DayOfWeek], item)
+		t[item.TimespanID][item.DayOfWeek] = append(t[item.TimespanID][item.DayOfWeek], item)
 	}
 
 	lenT := len(s.allTimespan)
@@ -68,7 +67,7 @@ func GeneticSchedule2String(s *GeneticSchedule) string {
 	return table.Table(rows)
 }
 
-func generateLessonsListString(a []*models.ScheduleItem) string {
+func generateLessonsListString(a []*GeneticScheduleItem) string {
 	s := make([]string, len(a))
 	for i := range a {
 		s[i] = a[i].String()

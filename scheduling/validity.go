@@ -35,13 +35,13 @@ func (X *GeneticSchedule) Invalidity() (total int) {
 		//log.Printf(teacher)
 		all := createSliceSet(pool)
 		for _, item := range items4T {
-			key := &ID1{timespanInDay: timespanInDay{item.TimespanId, item.DayOfWeek}, instructID: item.Instruct.InstructId, roomID: item.Clazzroom.Id}
+			key := &ID1{timespanInDay: timespanInDay{item.TimespanID, item.DayOfWeek}, instructID: item.InstructID, roomID: item.ClassroomID}
 			//log.Printf("teacher%v %+v is allocated to Instruct%v", item.Instruct.Teacher.Id, key, item.Instruct.InstructId)
 			val, exist := all.Get(key)
 			if exist {
 				v := val.(*ID1)
 				// log.Println("item", item, "v", v)
-				if v.instructID != item.Instruct.InstructId || v.roomID != item.Clazzroom.Id {
+				if v.instructID != item.InstructID || v.roomID != item.ClassroomID {
 					// log.Println("detect against h1", item, v)
 					cnt0++
 				}
@@ -59,7 +59,7 @@ func (X *GeneticSchedule) Invalidity() (total int) {
 		all := createSliceSet(pool)
 		// var all = createSliceSet(len(items4C))
 		for _, item := range items4C {
-			key := &timespanInDay{item.TimespanId, item.DayOfWeek}
+			key := &timespanInDay{item.TimespanID, item.DayOfWeek}
 			//log.Printf("clazz%v %+v is allocated to Instruct%v", clazz, key, item.Instruct.InstructId)
 			if all.Has(key) {
 				//log.Println("detect against h2")
@@ -76,11 +76,11 @@ func (X *GeneticSchedule) Invalidity() (total int) {
 		all := createSliceSet(pool)
 		// var all = createSliceSet(len(items4CR))
 		for _, item := range items4CR {
-			key := &ID3{timespanInDay{item.TimespanId, item.DayOfWeek}, item.Instruct.InstructId}
+			key := &ID3{timespanInDay{item.TimespanID, item.DayOfWeek}, item.InstructID}
 			// log.Printf("clazzroom%v %+v is allocated to Instruct%v", item.Clazzroom.Id, key, item.Instruct.InstructId)
 			val, exist := all.Get(key)
 			if exist {
-				if val.(*ID3).instructID != item.Instruct.InstructId {
+				if val.(*ID3).instructID != item.InstructID {
 					if cnt0 == 0 && cnt1 == 0 && cnt2 == 0 {
 						//log.Println("detect against h3", item, val.(*ID3).instructID)
 					}

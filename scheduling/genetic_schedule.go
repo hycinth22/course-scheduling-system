@@ -10,17 +10,17 @@ import (
 )
 
 // GeneticSchedule 以基因方法代表一个排课方案
-// 修改字段时，记得同时修改MakeGeneticSchedule函数式和Clone方法，，
+// 修改字段时，记得同时修改MakeGeneticSchedule函数式和Clone方法
 type GeneticSchedule struct {
 	parent           *Generator
 	items            GeneticScheduleItemCollection
 	allTimespan      []*models.Timespan
 	availableWeekday []int
 
-	queryByTeacher         map[string][]*models.ScheduleItem
-	queryByClazz           map[string][]*models.ScheduleItem
-	queryByClazzroom       map[int][]*models.ScheduleItem
-	queryByInstructedClazz map[string][]*models.ScheduleItem
+	queryByTeacher         map[string][]*GeneticScheduleItem
+	queryByClazz           map[string][]*GeneticScheduleItem
+	queryByClazzroom       map[int][]*GeneticScheduleItem
+	queryByInstructedClazz map[string][]*GeneticScheduleItem
 
 	scores struct {
 		invalidity float64
@@ -44,30 +44,30 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 	for _, instructedClazz := range g.Params.AllInstructedClazz {
 		for cnt := 0; cnt < instructedClazz.Instruct.Course.LessonsPerWeek; cnt++ {
 			seq := placeSeq[k]
-			item := &models.ScheduleItem{
-				ScheduleItemId: k, // keep empty, filled by models package
-				ScheduleId:     0, // keep empty, filled by models package
-				Instruct:       instructedClazz.Instruct,
-				Clazz:          instructedClazz.Clazz,
+			item := GeneticScheduleItem{
+				InstructID: instructedClazz.Instruct.InstructId,
+				ClassID:    instructedClazz.Clazz.ClazzId,
+				TeacherID:  instructedClazz.Instruct.Teacher.Id,
 				// filled by the algorithm
-				Clazzroom:  &models.Clazzroom{Id: g.allPlacement[seq].loc},
-				TimespanId: g.allPlacement[seq].timespan,
-				DayOfWeek:  g.allPlacement[seq].dayOfWeek,
+				ClassroomID:             g.allPlacement[seq].loc,
+				TimespanID:              g.allPlacement[seq].timespan,
+				DayOfWeek:               g.allPlacement[seq].dayOfWeek,
+				TendToObtainDayTimespan: instructedClazz.Instruct.Course.Kind == "必修" || instructedClazz.Instruct.Course.ExamMode == "考试",
 			}
-			scheduleItems = append(scheduleItems, item)
+			scheduleItems = append(scheduleItems, &item)
 			k++
 		}
 	}
 	// generate index
-	queryByTeacher := make(map[string][]*models.ScheduleItem, len(g.Params.AllInstructedClazz))
-	queryByClazz := make(map[string][]*models.ScheduleItem, len(g.Params.AllInstructedClazz))
-	queryByClazzroom := make(map[int][]*models.ScheduleItem, len(g.Params.AllClazzroom))
-	queryByInstructedClazz := make(map[string][]*models.ScheduleItem, len(g.Params.AllInstructedClazz))
+	queryByTeacher := make(map[string][]*GeneticScheduleItem, len(g.Params.AllInstructedClazz))
+	queryByClazz := make(map[string][]*GeneticScheduleItem, len(g.Params.AllInstructedClazz))
+	queryByClazzroom := make(map[int][]*GeneticScheduleItem, len(g.Params.AllClazzroom))
+	queryByInstructedClazz := make(map[string][]*GeneticScheduleItem, len(g.Params.AllInstructedClazz))
 	for _, item := range scheduleItems {
-		queryByTeacher[item.Instruct.Teacher.Id] = append(queryByTeacher[item.Instruct.Teacher.Id], item)
-		queryByClazz[item.Clazz.ClazzId] = append(queryByClazz[item.Clazz.ClazzId], item)
-		queryByClazzroom[item.Clazzroom.Id] = append(queryByClazzroom[item.Clazzroom.Id], item)
-		key := strconv.Itoa(item.Instruct.InstructId) + "_" + item.Clazz.ClazzId
+		queryByTeacher[item.TeacherID] = append(queryByTeacher[item.TeacherID], item)
+		queryByClazz[item.ClassID] = append(queryByClazz[item.ClassID], item)
+		queryByClazzroom[item.ClassroomID] = append(queryByClazzroom[item.ClassroomID], item)
+		key := strconv.Itoa(item.InstructID) + "_" + item.ClassID
 		queryByInstructedClazz[key] = append(queryByInstructedClazz[key], item)
 	}
 	for _, items := range queryByInstructedClazz {
@@ -75,7 +75,7 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 			if items[i].DayOfWeek != items[j].DayOfWeek {
 				return items[i].DayOfWeek < items[j].DayOfWeek
 			}
-			return items[i].TimespanId < items[j].TimespanId
+			return items[i].TimespanID < items[j].TimespanID
 		})
 	}
 	s := &GeneticSchedule{
@@ -95,16 +95,16 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 func (X *GeneticSchedule) Clone() eaopt.Genome {
 	var (
 		items                  = X.items.Copy().(GeneticScheduleItemCollection)
-		queryByTeacher         = make(map[string][]*models.ScheduleItem, len(X.queryByTeacher))
-		queryByClazz           = make(map[string][]*models.ScheduleItem, len(X.queryByClazz))
-		queryByClazzroom       = make(map[int][]*models.ScheduleItem, len(X.queryByClazzroom))
-		queryByInstructedClazz = make(map[string][]*models.ScheduleItem, len(X.queryByInstructedClazz))
+		queryByTeacher         = make(map[string][]*GeneticScheduleItem, len(X.queryByTeacher))
+		queryByClazz           = make(map[string][]*GeneticScheduleItem, len(X.queryByClazz))
+		queryByClazzroom       = make(map[int][]*GeneticScheduleItem, len(X.queryByClazzroom))
+		queryByInstructedClazz = make(map[string][]*GeneticScheduleItem, len(X.queryByInstructedClazz))
 	)
 	for i := range items {
-		queryByTeacher[items[i].Instruct.Teacher.Id] = append(queryByTeacher[items[i].Instruct.Teacher.Id], items[i])
-		queryByClazz[items[i].Clazz.ClazzId] = append(queryByClazz[items[i].Clazz.ClazzId], items[i])
-		queryByClazzroom[items[i].Clazzroom.Id] = append(queryByClazzroom[items[i].Clazzroom.Id], items[i])
-		key := strconv.Itoa(items[i].Instruct.InstructId) + "_" + items[i].Clazz.ClazzId
+		queryByTeacher[items[i].TeacherID] = append(queryByTeacher[items[i].TeacherID], items[i])
+		queryByClazz[items[i].ClassID] = append(queryByClazz[items[i].ClassID], items[i])
+		queryByClazzroom[items[i].ClassroomID] = append(queryByClazzroom[items[i].ClassroomID], items[i])
+		key := strconv.Itoa(items[i].InstructID) + "_" + items[i].ClassID
 		queryByInstructedClazz[key] = append(queryByInstructedClazz[key], items[i])
 	}
 	for _, items := range queryByInstructedClazz {
@@ -112,7 +112,7 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 			if items[i].DayOfWeek != items[j].DayOfWeek {
 				return items[i].DayOfWeek < items[j].DayOfWeek
 			}
-			return items[i].TimespanId < items[j].TimespanId
+			return items[i].TimespanID < items[j].TimespanID
 		})
 	}
 	return &GeneticSchedule{
@@ -136,7 +136,7 @@ func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 	}
 	for i := 0; i < times; i++ {
 		item := X.items[rng.Intn(len(X.items))]
-		item.TimespanId = X.parent.Params.AllTimespan[rng.Intn(len(X.parent.Params.AllTimespan))].Id
+		item.TimespanID = X.parent.Params.AllTimespan[rng.Intn(len(X.parent.Params.AllTimespan))].Id
 		item.DayOfWeek = availableWeekday[rng.Intn(len(availableWeekday))]
 	}
 }
@@ -152,9 +152,10 @@ func (X *GeneticSchedule) Crossover(Y eaopt.Genome, rng *rand.Rand) {
 		var ids = randomInts(2, 0, X.items.Len(), rng)
 		i, j := ids[0], ids[1]
 		if rng.Float64() < 0.5 {
-			X.items[i].TimespanId, Y.(*GeneticSchedule).items[j].TimespanId = Y.(*GeneticSchedule).items[j].TimespanId, X.items[i].TimespanId
+			X.items[i].TimespanID, Y.(*GeneticSchedule).items[j].TimespanID = Y.(*GeneticSchedule).items[j].TimespanID, X.items[i].TimespanID
+			X.items[i].DayOfWeek, Y.(*GeneticSchedule).items[j].DayOfWeek = Y.(*GeneticSchedule).items[j].DayOfWeek, X.items[i].DayOfWeek
 		} else {
-			X.items[i].Clazzroom.Id, Y.(*GeneticSchedule).items[j].Clazzroom.Id = Y.(*GeneticSchedule).items[j].Clazzroom.Id, X.items[i].Clazzroom.Id
+			X.items[i].ClassroomID, Y.(*GeneticSchedule).items[j].ClassroomID = Y.(*GeneticSchedule).items[j].ClassroomID, X.items[i].ClassroomID
 		}
 	}
 }

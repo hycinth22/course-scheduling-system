@@ -69,7 +69,8 @@ func SearchUsers(offset, limit int, search string) ([]*User, int) {
 	cond2 := orm.NewCondition().And("username__startswith", search).Or("username__endswith", search)
 	cond3 := orm.NewCondition().And("role__startswith", search).Or("role__endswith", search)
 	cond4 := orm.NewCondition().And("last_login_loc__startswith", search).Or("last_login_loc__endswith", search)
-	cond := cond1.OrCond(cond2).OrCond(cond3).OrCond(cond4)
+	cond5 := orm.NewCondition().And("associated_teacher__teacher_id__startswith", search).Or("associated_teacher__teacher_id__endswith", search)
+	cond := cond1.OrCond(cond2).OrCond(cond3).OrCond(cond4).OrCond(cond5)
 	num, err := o.QueryTable("user").SetCond(cond).Offset(offset).Limit(limit).RelatedSel().All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)

@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
 	"log"
 	"time"
 
 	"courseScheduling/models"
+	"courseScheduling/session"
 
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -40,17 +42,15 @@ func (this *UserController) Login() {
 				log.Println(err)
 			}
 		}()
-		err := this.SetSession("username", username)
+		err := session.SetCurrentUser(this.Controller, u)
 		if err != nil {
 			log.Println(err)
-			return
 		}
-		err = this.SetSession("password", password)
-		if err != nil {
-			log.Println(err)
-			return
+	} else if !ok && u != nil && u.Status != 0 {
+		this.Data["json"] = map[string]interface{}{
+			"code": -10002,
+			"msg":  "user banned",
 		}
-
 	} else {
 		this.Data["json"] = map[string]interface{}{
 			"code": -10001,
@@ -116,6 +116,138 @@ func (this *UserController) LoginState() {
 	}
 	err := this.ServeJSON()
 	if err != nil {
+		return
+	}
+}
+
+// @router /:id/status [put]
+func (this *UserController) SetStatus() {
+	id, err := this.GetInt(":id")
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	var body struct {
+		Value int
+	}
+	err = this.ParseForm(&body)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.UpdateUserStatus(&models.User{Id: id, Status: body.Value})
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+}
+
+// @router /:id/password [put]
+func (this *UserController) ResetPassword() {
+	id, err := this.GetInt(":id")
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	var body struct {
+		Value string
+	}
+	err = this.ParseForm(&body)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.UpdateUserPassword(&models.User{Id: id, Password: body.Value})
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+}
+
+// @router /new [post]
+func (this *UserController) Create() {
+	var c models.User
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &c)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.AddUser(c)
+	if err != nil {
+		this.Data["json"] = map[string]string{"id": "", "msg": err.Error()}
+		x := this.ServeJSON()
+		if x != nil {
+			log.Println(x)
+		}
+		return
+	}
+	this.Data["json"] = "create successfully"
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+// @router /:id [put]
+func (this *UserController) Put() {
+	id, err := this.GetInt(":id")
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	var c models.User
+	err = json.Unmarshal(this.Ctx.Input.RequestBody, &c)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	log.Println(c)
+	if id != c.Id {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.UpdateUser(&c)
+	if err != nil {
+		this.Data["json"] = err.Error()
+	} else {
+		this.Data["json"] = "success"
+	}
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+// @router /:id [delete]
+func (this *UserController) Delete() {
+	id, err := this.GetInt(":id")
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.DelUser(&models.User{Id: id})
+	if err == nil {
+		this.Data["json"] = "delete success!"
+	} else {
+		this.Data["json"] = "delete failed!"
+		this.Ctx.Output.SetStatus(500)
+	}
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
 		return
 	}
 }

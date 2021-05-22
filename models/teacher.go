@@ -34,7 +34,7 @@ func AddTeacher(c Teacher) error {
 
 	_, err := o.Insert(&c)
 	if err != nil {
-		log.Printf("AddTimespan %v\n", err)
+		log.Printf("AddTeacher %v\n", err)
 		return err
 	}
 	return nil

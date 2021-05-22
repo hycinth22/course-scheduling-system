@@ -28,6 +28,10 @@ func ListBackup() []string {
 	return files
 }
 
+func GetBackupAbsPath(name string) string {
+	return backupDir + name
+}
+
 func Backup() error {
 	filename := time.Now().Format("2006_01_02_15_04_05.00000.sql")
 	f, err := os.Create(filepath.Join(backupDir, filename))

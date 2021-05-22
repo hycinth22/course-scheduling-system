@@ -65,7 +65,6 @@ func ListUsers(offset, limit int) ([]*User, int) {
 
 func SearchUsers(offset, limit int, search string) ([]*User, int) {
 	var r []*User
-
 	cond1 := orm.NewCondition().And("id__startswith", search).Or("id__endswith", search)
 	cond2 := orm.NewCondition().And("username__startswith", search).Or("username__endswith", search)
 	cond3 := orm.NewCondition().And("role__startswith", search).Or("role__endswith", search)
@@ -82,4 +81,46 @@ func SearchUsers(offset, limit int, search string) ([]*User, int) {
 		return nil, 0
 	}
 	return r, int(cnt)
+}
+
+func UpdateUserStatus(u *User) error {
+	_, err := o.Update(u, "Status")
+	if err != nil {
+		log.Println("UpdateUserStatus error", err)
+		return err
+	}
+	return err
+}
+
+func UpdateUserPassword(u *User) error {
+	_, err := o.Update(u, "Password")
+	if err != nil {
+		log.Println("UpdateUserPassword error", err)
+		return err
+	}
+	return err
+}
+
+func AddUser(c User) error {
+	_, err := o.Insert(&c)
+	if err != nil {
+		log.Printf("AddUser %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func UpdateUser(c *User) error {
+	_, err := o.Update(c)
+	if err != nil {
+		log.Printf("UpdateUser %v\n", err)
+		return err
+	}
+	return nil
+}
+
+func DelUser(c *User) error {
+	_, err := o.Delete(c)
+	log.Printf("DelUser %v\n", err)
+	return err
 }

@@ -24,7 +24,7 @@ func init() {
 		StopWhenFitnessKeep:   50,
 		FitnessJudgePrecision: 0.1,
 
-		MutationRate:  0.95,
+		MutationRate:  0.6,
 		CrossoverRate: 0.1,
 
 		NumOfPopulations: 2,

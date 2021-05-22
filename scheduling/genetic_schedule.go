@@ -138,6 +138,7 @@ func (X *GeneticSchedule) Mutate(rng *rand.Rand) {
 		item := X.items[rng.Intn(len(X.items))]
 		item.TimespanID = X.parent.Params.AllTimespan[rng.Intn(len(X.parent.Params.AllTimespan))].Id
 		item.DayOfWeek = availableWeekday[rng.Intn(len(availableWeekday))]
+		item.ClassroomID = X.parent.Params.AllClazzroom[rng.Intn(len(X.parent.Params.AllClazzroom))].Id
 	}
 }
 

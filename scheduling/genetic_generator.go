@@ -15,6 +15,7 @@ type Params struct {
 	AllInstructedClazz []*models.InstructedClazz
 	AllClazzroom       []*models.Clazzroom
 	AllTimespan        []*models.Timespan
+	UseEvaluator       []string
 }
 
 type Generator struct {

@@ -61,6 +61,9 @@ func main() {
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
+		UseEvaluator: []string{
+			"AvoidUseNight", "DisperseSameCourse", "KeepAllLessonsDisperseEveryTimespan", "KeepAllLessonsDisperseEveryDay",
+		},
 	})
 	f, err := os.Create("s.txt")
 	if err != nil {

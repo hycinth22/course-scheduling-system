@@ -53,6 +53,9 @@ func main() {
 			AllInstructedClazz: allInstructedClazz,
 			AllClazzroom:       allClazzroom,
 			AllTimespan:        allTimespan,
+			UseEvaluator: []string{
+				"AvoidUseNight", "DisperseSameCourse", "KeepAllLessonsDisperseEveryTimespan", "KeepAllLessonsDisperseEveryDay",
+			},
 		})
 		_, err = models.AddNewSchedule(s, result, len(allTimespan), score)
 		if err != nil {

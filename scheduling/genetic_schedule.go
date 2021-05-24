@@ -87,6 +87,15 @@ func MakeGeneticSchedule(g *Generator, rng *rand.Rand) *GeneticSchedule {
 		queryByClazz:           queryByClazz,
 		queryByClazzroom:       queryByClazzroom,
 		queryByInstructedClazz: queryByInstructedClazz,
+		scores: struct {
+			invalidity float64
+			h          ScoreHard
+			s          ScoreSoft
+		}{invalidity: 0.0, h: ScoreHard{}, s: ScoreSoft{
+			Items:  g.Params.UseEvaluator,
+			Scores: map[string]float64{},
+		},
+		},
 	}
 	return s
 }
@@ -115,6 +124,10 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 			return items[i].TimespanID < items[j].TimespanID
 		})
 	}
+	newmap := map[string]float64{}
+	for index, element := range X.scores.s.Scores {
+		newmap[index] = element
+	}
 	return &GeneticSchedule{
 		parent:                 X.parent,
 		items:                  items,
@@ -124,7 +137,15 @@ func (X *GeneticSchedule) Clone() eaopt.Genome {
 		queryByClazz:           queryByClazz,
 		queryByClazzroom:       queryByClazzroom,
 		queryByInstructedClazz: queryByInstructedClazz,
-		scores:                 X.scores,
+		scores: struct {
+			invalidity float64
+			h          ScoreHard
+			s          ScoreSoft
+		}{invalidity: X.scores.invalidity, h: X.scores.h, s: ScoreSoft{
+			Items:  X.scores.s.Items,
+			Scores: newmap,
+		},
+		},
 	}
 }
 

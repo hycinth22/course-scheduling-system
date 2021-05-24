@@ -78,6 +78,9 @@ func (this *ScheduleController) NewSchedule() {
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
+		UseEvaluator: []string{
+			"AvoidUseNight", "DisperseSameCourse", "KeepAllLessonsDisperseEveryTimespan", "KeepAllLessonsDisperseEveryDay",
+		},
 	})
 	s, err := models.AddNewSchedule(semester, result, len(allTimespan), score)
 	if err != nil {

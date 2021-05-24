@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"log"
 
 	"courseScheduling/models"
@@ -78,5 +79,77 @@ func (this *SemesterController) ChangePastSemesterVisibility() {
 	err = models.GlobalConfig.SaveToDB()
 	if err != nil {
 		log.Println(err)
+	}
+}
+
+// @router /new [post]
+func (this *SemesterController) Create() {
+	var c models.Semester
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &c)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.AddSemester(c)
+	if err != nil {
+		this.Data["json"] = map[string]string{"id": "", "msg": err.Error()}
+		x := this.ServeJSON()
+		if x != nil {
+			log.Println(x)
+		}
+		return
+	}
+	this.Data["json"] = "create successfully"
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+// @router /:id [put]
+func (this *SemesterController) Put() {
+	id := this.GetString(":id")
+	var c models.Semester
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &c)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	log.Println(c)
+	if id != c.StartDate {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.UpdateSemester(&c)
+	if err != nil {
+		this.Data["json"] = err.Error()
+	} else {
+		this.Data["json"] = "success"
+	}
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+// @router /:id [delete]
+func (this *SemesterController) Delete() {
+	id := this.GetString(":id")
+	err := models.DelSemester(&models.Semester{StartDate: id})
+	if err == nil {
+		this.Data["json"] = "delete success!"
+	} else {
+		this.Data["json"] = "delete failed!"
+		this.Ctx.Output.SetStatus(500)
+	}
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
 	}
 }

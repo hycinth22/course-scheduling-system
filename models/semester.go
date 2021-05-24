@@ -25,7 +25,6 @@ func AllSemester() ([]*Semester, error) {
 }
 
 func AddSemester(c Semester) error {
-
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddSemester %v\n", err)
@@ -34,8 +33,16 @@ func AddSemester(c Semester) error {
 	return nil
 }
 
-func DelSemester(c *Semester) error {
+func UpdateSemester(c *Semester) error {
+	_, err := o.Update(c)
+	if err != nil {
+		log.Printf("UpdateSemester %v\n", err)
+		return err
+	}
+	return nil
+}
 
+func DelSemester(c *Semester) error {
 	_, err := o.Delete(c)
 	log.Printf("DelSemester %v\n", err)
 	return err

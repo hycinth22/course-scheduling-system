@@ -11,6 +11,7 @@ import (
 
 func init() {
 	api := web.NewNamespace("/api",
+		web.NSNamespace("/backup", web.NSInclude(&controllers.BackupController{})),
 		web.NSNamespace("/clazz", web.NSInclude(&controllers.ClazzController{})),
 		web.NSNamespace("/clazzroom", web.NSInclude(&controllers.ClazzroomController{})),
 		web.NSNamespace("/college", web.NSInclude(&controllers.CollegeController{})),

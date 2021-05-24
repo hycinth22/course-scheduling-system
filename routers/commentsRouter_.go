@@ -9,15 +9,6 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"],
 		beego.ControllerComments{
-			Method:           "List",
-			Router:           "/",
-			AllowHTTPMethods: []string{"get"},
-			MethodParams:     param.Make(),
-			Filters:          nil,
-			Params:           nil})
-
-	beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"],
-		beego.ControllerComments{
 			Method:           "Delete",
 			Router:           "/:name",
 			AllowHTTPMethods: []string{"delete"},
@@ -27,9 +18,27 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"],
 		beego.ControllerComments{
-			Method:           "Download",
-			Router:           "/download/:name",
+			Method:           "Restore",
+			Router:           "/apply",
 			AllowHTTPMethods: []string{"put"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"],
+		beego.ControllerComments{
+			Method:           "Download",
+			Router:           "/download/",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"],
+		beego.ControllerComments{
+			Method:           "List",
+			Router:           "/list",
+			AllowHTTPMethods: []string{"get"},
 			MethodParams:     param.Make(),
 			Filters:          nil,
 			Params:           nil})
@@ -46,7 +55,7 @@ func init() {
 	beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:BackupController"],
 		beego.ControllerComments{
 			Method:           "Upload",
-			Router:           "/new/upload",
+			Router:           "/upload",
 			AllowHTTPMethods: []string{"post"},
 			MethodParams:     param.Make(),
 			Filters:          nil,

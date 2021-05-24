@@ -42,11 +42,12 @@ func ListDepartments(offset, limit int) ([]*Department, int) {
 
 func SearchDepartments(offset, limit int, search string) ([]*Department, int) {
 	var r []*Department
-
 	cond1 := orm.NewCondition().And("dept_id__startswith", search).Or("dept_id__endswith", search)
 	cond2 := orm.NewCondition().And("dept_name__startswith", search).Or("dept_name__endswith", search)
-	cond := cond1.OrCond(cond2)
-	num, err := o.QueryTable("department").SetCond(cond).Offset(offset).Limit(limit).All(&r)
+	cond3 := orm.NewCondition().And("College__college_id__startswith", search).Or("College__college_id__endswith", search)
+	cond4 := orm.NewCondition().And("College__college_name__startswith", search).Or("College__college_name__endswith", search)
+	cond := cond1.OrCond(cond2).OrCond(cond3).OrCond(cond4)
+	num, err := o.QueryTable("department").SetCond(cond).RelatedSel().Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
 		return nil, 0

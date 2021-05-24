@@ -142,6 +142,15 @@ func init() {
 			Filters:          nil,
 			Params:           nil})
 
+	beego.GlobalControllerRouter["courseScheduling/controllers:CollegeController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:CollegeController"],
+		beego.ControllerComments{
+			Method:           "ImportFromExcel",
+			Router:           "/excel",
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
 	beego.GlobalControllerRouter["courseScheduling/controllers:CourseController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:CourseController"],
 		beego.ControllerComments{
 			Method:           "Create",

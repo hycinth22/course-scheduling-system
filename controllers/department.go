@@ -185,7 +185,7 @@ func (c *DepartmentController) Delete() {
 // @Failure 500 import failed
 // @router /excel [post]
 func (c *DepartmentController) ImportFromExcel() {
-	f, _, err := c.GetFile("excel")
+	f, _, err := c.GetFile("departmentExcel")
 	if err != nil {
 		log.Fatal("getfile err ", err)
 	}

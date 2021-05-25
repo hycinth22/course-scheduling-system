@@ -72,6 +72,15 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"],
 		beego.ControllerComments{
+			Method:           "ImportFromExcel",
+			Router:           "/excel",
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"],
+		beego.ControllerComments{
 			Method:           "List",
 			Router:           "/list",
 			AllowHTTPMethods: []string{"get"},
@@ -453,6 +462,15 @@ func init() {
 			Method:           "Delete",
 			Router:           "/:id",
 			AllowHTTPMethods: []string{"delete"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:TeacherController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:TeacherController"],
+		beego.ControllerComments{
+			Method:           "ImportFromExcel",
+			Router:           "/excel",
+			AllowHTTPMethods: []string{"post"},
 			MethodParams:     param.Make(),
 			Filters:          nil,
 			Params:           nil})

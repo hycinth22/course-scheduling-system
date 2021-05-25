@@ -22,7 +22,6 @@ type Teacher struct {
 
 func GetTeacher(id string) (*Teacher, error) {
 	t := &Teacher{Id: id}
-
 	err := o.Read(t)
 	if err != nil {
 		log.Printf("GetTeacher Err: %d, %v\n", err)
@@ -31,7 +30,6 @@ func GetTeacher(id string) (*Teacher, error) {
 }
 
 func AddTeacher(c Teacher) error {
-
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddTeacher %v\n", err)

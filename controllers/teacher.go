@@ -3,7 +3,9 @@ package controllers
 import (
 	"encoding/json"
 	"log"
+	"mime/multipart"
 
+	"courseScheduling/excel"
 	"courseScheduling/models"
 	beego "github.com/beego/beego/v2/server/web"
 )
@@ -137,6 +139,31 @@ func (c *TeacherController) ListAllInColleges() {
 	if err != nil {
 		log.Println(err)
 		c.Ctx.Output.SetStatus(500)
+		return
+	}
+}
+
+// @router /excel [post]
+func (c *TeacherController) ImportFromExcel() {
+	f, _, err := c.GetFile("excel")
+	if err != nil {
+		log.Fatal("getfile err ", err)
+	}
+	defer func(f multipart.File) {
+		err := f.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(f)
+	batch := excel.ParseTeacherExcel(f)
+	err = models.ImportTeacher(batch)
+	if err != nil {
+		c.Ctx.Output.SetStatus(500)
+		x := c.ServeJSON()
+		if x != nil {
+			log.Println(x)
+			return
+		}
 		return
 	}
 }

@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"log"
+	"mime/multipart"
 
+	"courseScheduling/excel"
 	"courseScheduling/models"
 	"github.com/beego/beego/v2/server/web"
 )
@@ -66,6 +68,31 @@ func (this *ClazzController) List() {
 	err := this.ServeJSON()
 	if err != nil {
 		log.Println(err)
+		return
+	}
+}
+
+// @router /excel [post]
+func (c *ClazzController) ImportFromExcel() {
+	f, _, err := c.GetFile("excel")
+	if err != nil {
+		log.Fatal("getfile err ", err)
+	}
+	defer func(f multipart.File) {
+		err := f.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(f)
+	batch := excel.ParseClazzExcel(f)
+	err = models.ImportClazz(batch)
+	if err != nil {
+		c.Ctx.Output.SetStatus(500)
+		x := c.ServeJSON()
+		if x != nil {
+			log.Println(x)
+			return
+		}
 		return
 	}
 }

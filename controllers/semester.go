@@ -153,3 +153,18 @@ func (this *SemesterController) Delete() {
 		return
 	}
 }
+
+// @router /selected [get]
+func (this *SemesterController) GetSelected() {
+	models.GlobalConfig.RLock()
+	sel := models.GlobalConfig.SelectedSemester
+	models.GlobalConfig.RUnlock()
+	this.Data["json"] = map[string]interface{}{
+		"selected": sel,
+	}
+	err := this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}

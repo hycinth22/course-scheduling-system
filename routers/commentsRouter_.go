@@ -457,6 +457,15 @@ func init() {
 			Filters:          nil,
 			Params:           nil})
 
+	beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"],
+		beego.ControllerComments{
+			Method:           "GetSelected",
+			Router:           "/selected",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
 	beego.GlobalControllerRouter["courseScheduling/controllers:TeacherController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:TeacherController"],
 		beego.ControllerComments{
 			Method:           "List",

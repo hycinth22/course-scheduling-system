@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"log"
 	"mime/multipart"
 
@@ -93,6 +94,52 @@ func (c *ClazzController) ImportFromExcel() {
 			log.Println(x)
 			return
 		}
+		return
+	}
+}
+
+// @router /:id [put]
+func (this *ClazzController) Put() {
+	id := this.GetString(":id")
+	var c models.Clazz
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &c)
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	log.Println(c)
+	if id != c.ClazzId {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(400)
+		return
+	}
+	err = models.UpdateClazz(&c)
+	if err != nil {
+		this.Data["json"] = err.Error()
+	} else {
+		this.Data["json"] = "success"
+	}
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}
+
+// @router / [delete]
+func (this *ClazzController) Delete() {
+	id := this.GetString("clazz_id")
+	err := models.DelClazz(&models.Clazz{ClazzId: id})
+	if err == nil {
+		this.Data["json"] = "delete success!"
+	} else {
+		this.Data["json"] = "delete failed!"
+		this.Ctx.Output.SetStatus(500)
+	}
+	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
 		return
 	}
 }

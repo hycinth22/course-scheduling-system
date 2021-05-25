@@ -137,9 +137,9 @@ func (this *SemesterController) Put() {
 	}
 }
 
-// @router /:id [delete]
+// @router / [delete]
 func (this *SemesterController) Delete() {
-	id := this.GetString(":id")
+	id := this.GetString("start_date")
 	err := models.DelSemester(&models.Semester{StartDate: id})
 	if err == nil {
 		this.Data["json"] = "delete success!"

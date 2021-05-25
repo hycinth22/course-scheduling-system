@@ -72,6 +72,24 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"],
 		beego.ControllerComments{
+			Method:           "Delete",
+			Router:           "/",
+			AllowHTTPMethods: []string{"delete"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"],
+		beego.ControllerComments{
+			Method:           "Put",
+			Router:           "/:id",
+			AllowHTTPMethods: []string{"put"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ClazzController"],
+		beego.ControllerComments{
 			Method:           "ImportFromExcel",
 			Router:           "/excel",
 			AllowHTTPMethods: []string{"post"},
@@ -396,18 +414,18 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"],
 		beego.ControllerComments{
-			Method:           "Put",
-			Router:           "/:id",
-			AllowHTTPMethods: []string{"put"},
+			Method:           "Delete",
+			Router:           "/",
+			AllowHTTPMethods: []string{"delete"},
 			MethodParams:     param.Make(),
 			Filters:          nil,
 			Params:           nil})
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:SemesterController"],
 		beego.ControllerComments{
-			Method:           "Delete",
+			Method:           "Put",
 			Router:           "/:id",
-			AllowHTTPMethods: []string{"delete"},
+			AllowHTTPMethods: []string{"put"},
 			MethodParams:     param.Make(),
 			Filters:          nil,
 			Params:           nil})

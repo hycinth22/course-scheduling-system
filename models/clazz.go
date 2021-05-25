@@ -34,6 +34,15 @@ func AddClazz(c Clazz) error {
 	return nil
 }
 
+func UpdateClazz(c *Clazz) error {
+	_, err := o.Update(c)
+	if err != nil {
+		log.Printf("UpdateClazz %v\n", err)
+		return err
+	}
+	return nil
+}
+
 func DelClazz(c *Clazz) error {
 
 	_, err := o.Delete(c)

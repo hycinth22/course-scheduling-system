@@ -45,7 +45,7 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 	softScoreMaxTotal := 0.0
 	for _, evaluatorName := range X.parent.Params.UseEvaluator {
 		evaluator := EvaluatorsTable[evaluatorName]
-		score, minScore, maxScore, err := evaluator.f(X)
+		score, minScore, maxScore, err := evaluator.F(X)
 		if err != nil {
 			log.Println(err)
 			return 0.0, err
@@ -53,9 +53,9 @@ func (X *GeneticSchedule) Evaluate() (fit float64, err error) {
 		// 归一化后加权
 		uniScore := normalizeFloat64(score, minScore, maxScore)
 		X.scores.s.Scores[evaluatorName] = uniScore
-		weighted := uniScore * evaluator.weight
+		weighted := uniScore * evaluator.Weight
 		softTotal += weighted
-		softScoreMaxTotal += evaluator.weight
+		softScoreMaxTotal += evaluator.Weight
 	}
 	uniSoft := normalizeFloat64(softTotal, 0.0, softScoreMaxTotal) * 10000
 	fit += uniSoft

@@ -2,37 +2,55 @@ package scheduling
 
 import (
 	"log"
+	"sort"
+	"strings"
 
 	"github.com/montanaflynn/stats"
 )
 
 type Evaluator func(X *GeneticSchedule) (fit, min, max float64, err error)
 type EvaluatorInfo struct {
-	weight float64
-	f      Evaluator
+	Key     string
+	Explain string
+	Weight  float64
+	F       Evaluator
 }
 
-var EvaluatorsTable = map[string]EvaluatorInfo{
-	// 1. 避免必修课和考试课使用晚上的时间段
-	"AvoidUseNight": {
-		weight: 950.0,
-		f:      AvoidUseNight,
-	},
-	// 2. 同一门课在一周内尽量分散
-	"DisperseSameCourse": {
-		weight: 450.0,
-		f:      DisperseSameCourse,
-	},
-	// 3. 以时间段为单位计算课程数标准差，确保课程分散性。
-	"KeepAllLessonsDisperseEveryTimespan": {
-		weight: 50.0,
-		f:      KeepAllLessonsDisperseEveryTimespan,
-	},
-	// 4. 以天为单位计算课程数标准差，确保课程分散性。
-	"KeepAllLessonsDisperseEveryDay": {
-		weight: 50.0,
-		f:      KeepAllLessonsDisperseEveryDay,
-	},
+var (
+	EvaluatorsTable = map[string]*EvaluatorInfo{
+		"AvoidUseNight": {
+			Explain: "避免必修课和考试课使用晚上的时间段",
+			Weight:  950.0,
+			F:       AvoidUseNight,
+		},
+		"DisperseSameCourse": {
+			Explain: "同一门课在一周内尽量分散",
+			Weight:  450.0,
+			F:       DisperseSameCourse,
+		},
+		"KeepAllLessonsDisperseEveryTimespan": {
+			Explain: "以时间段为单位计算课程数标准差，确保课程分散性",
+			Weight:  50.0,
+			F:       KeepAllLessonsDisperseEveryTimespan,
+		},
+		"KeepAllLessonsDisperseEveryDay": {
+			Explain: "以天为单位计算课程数标准差，确保课程分散性",
+			Weight:  50.0,
+			F:       KeepAllLessonsDisperseEveryDay,
+		},
+	}
+	EvaluatorList []*EvaluatorInfo
+)
+
+func init() {
+	EvaluatorList = make([]*EvaluatorInfo, 0, len(EvaluatorsTable))
+	for key := range EvaluatorsTable {
+		EvaluatorsTable[key].Key = key
+		EvaluatorList = append(EvaluatorList, EvaluatorsTable[key])
+	}
+	sort.SliceStable(EvaluatorList, func(i, j int) bool {
+		return strings.Compare(EvaluatorList[i].Key, EvaluatorList[j].Key) == -1
+	})
 }
 
 // 1. 避免必修课和考试课使用晚上的时间段

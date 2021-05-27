@@ -51,6 +51,7 @@ func (this *ScheduleController) GetSchedule() {
 // @router /new [get]
 func (this *ScheduleController) NewSchedule() {
 	semesterDate := this.Ctx.Input.Query("semester_date")
+	evaluators := this.GetStrings("evaluators[]")
 	if semesterDate == "" {
 		this.Ctx.Output.SetStatus(400)
 		return
@@ -78,9 +79,7 @@ func (this *ScheduleController) NewSchedule() {
 		AllInstructedClazz: allInstructedClazz,
 		AllClazzroom:       allClazzroom,
 		AllTimespan:        allTimespan,
-		UseEvaluator: []string{
-			"AvoidUseNight", "DisperseSameCourse", "KeepAllLessonsDisperseEveryTimespan", "KeepAllLessonsDisperseEveryDay",
-		},
+		UseEvaluator:       evaluators,
 	})
 	s, err := models.AddNewSchedule(semester, result, len(allTimespan), score)
 	if err != nil {
@@ -424,6 +423,19 @@ func (this *ScheduleController) SelectSchedule() {
 	}
 	this.Data["json"] = "ok"
 	err = this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		this.Ctx.Output.SetStatus(500)
+		return
+	}
+}
+
+// @router /evaluator_list [get]
+func (this *ScheduleController) GetEvaluatorList() {
+	list := scheduling.EvaluatorList
+	r := views.ToEvaluatorList(list)
+	this.Data["json"] = r
+	err := this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		this.Ctx.Output.SetStatus(500)

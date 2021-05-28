@@ -78,13 +78,15 @@ func ListInstructs(offset, limit int, semester string) ([]*Instruct, int) {
 
 func SearchInstructs(offset, limit int, search string, semester string) ([]*Instruct, int) {
 	var r []*Instruct
-
-	cond1 := orm.NewCondition().And("teacher_id__startswith", search).Or("teacher_id__endswith", search)
-	cond2 := orm.NewCondition().And("teacher_name__startswith", search).Or("teacher_name__endswith", search)
-	cond3 := orm.NewCondition().And("teacher_title__startswith", search).Or("teacher_title__endswith", search)
-	cond4 := orm.NewCondition().And("teacher_tel__startswith", search).Or("teacher_tel__endswith", search)
-	cond := cond1.OrCond(cond2).OrCond(cond3).OrCond(cond4)
-	num, err := o.QueryTable("instruct").Filter("semester_id", semester).SetCond(cond).Offset(offset).Limit(limit).RelatedSel().All(&r)
+	cond1 := orm.NewCondition().And("Teacher__teacher_id__startswith", search).Or("Teacher__teacher_id__endswith", search)
+	cond2 := orm.NewCondition().And("Teacher__teacher_name__startswith", search).Or("Teacher__teacher_name__endswith", search)
+	cond3 := orm.NewCondition().And("Teacher__teacher_title__startswith", search).Or("Teacher__teacher_title__endswith", search)
+	cond4 := orm.NewCondition().And("Teacher__teacher_tel__startswith", search).Or("Teacher__teacher_tel__endswith", search)
+	cond5 := orm.NewCondition().And("Course__course_id__startswith", search).Or("Course__course_id__endswith", search)
+	cond6 := orm.NewCondition().And("Course__course_name__startswith", search).Or("Course__course_name__endswith", search)
+	cond7 := orm.NewCondition().And("Course__course_founder__startswith", search).Or("Course__course_founder__endswith", search)
+	cond := cond1.OrCond(cond2).OrCond(cond3).OrCond(cond4).OrCond(cond5).OrCond(cond6).OrCond(cond7)
+	num, err := o.QueryTable("instruct").Filter("semester_id", semester).RelatedSel().SetCond(cond).Offset(offset).Limit(limit).All(&r)
 	if err != nil {
 		log.Printf("Returned Rows Num: %d, %v\n", num, err)
 		return nil, 0

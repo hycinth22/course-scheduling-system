@@ -89,7 +89,6 @@ func AllInstructedClazzesForInstruct(instruct_id int) ([]*InstructedClazz, error
 }
 
 func AddInstructedClazz(c InstructedClazz) error {
-
 	_, err := o.Insert(&c)
 	if err != nil {
 		log.Printf("AddInstructedClazz %v\n", err)
@@ -98,8 +97,40 @@ func AddInstructedClazz(c InstructedClazz) error {
 	return nil
 }
 
-func DelInstructedClazz(c *Instruct) error {
+func ResetInstructedClazzForInstruct(i *Instruct, cl []*InstructedClazz) error {
+	tx, err := o.Begin()
+	defer func() {
+		if err != nil {
+			x := tx.Rollback()
+			if x != nil {
+				log.Printf("ResetInstructedClazzForInstruct ROLLBACK FAILED %v\n", x)
+				return
+			}
+		} else {
+			x := tx.Commit()
+			if x != nil {
+				log.Printf("ResetInstructedClazzForInstruct COMMIT FAILED %v\n", x)
+				return
+			}
+		}
+	}()
+	if err != nil {
+		log.Printf("ResetInstructedClazzForInstruct %v\n", err)
+		return err
+	}
+	_, err = tx.Delete(&InstructedClazz{Instruct: i}, "instruct_id")
+	if err != nil {
+		return err
+	}
+	_, err = tx.InsertMulti(len(cl), cl)
+	if err != nil {
+		log.Printf("ResetInstructedClazzForInstruct %v\n", err)
+		return err
+	}
+	return nil
+}
 
+func DelInstructedClazz(c *Instruct) error {
 	_, err := o.Delete(c)
 	log.Printf("DelInstructedClazz %v\n", err)
 	return err

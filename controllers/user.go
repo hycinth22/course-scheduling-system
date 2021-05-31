@@ -30,10 +30,11 @@ func (this *UserController) Login() {
 			"code": 0,
 			"msg":  "login success",
 			"profile": map[string]interface{}{
-				"username": u.Username,
-				"role":     u.Role,
-				"lastTime": u.LastLogin,
-				"lastLoc":  u.LastLoc,
+				"username":           u.Username,
+				"role":               u.Role,
+				"lastTime":           u.LastLogin,
+				"lastLoc":            u.LastLoc,
+				"associated_teacher": u.AssociatedTeacher.Id,
 			},
 		}
 		go func() {
@@ -42,7 +43,7 @@ func (this *UserController) Login() {
 				log.Println(err)
 			}
 		}()
-		err := session.SetCurrentUser(this.Controller, u)
+		err := session.SetCurrentUser(&this.Controller, u)
 		if err != nil {
 			log.Println(err)
 		}
@@ -98,15 +99,17 @@ func (this *UserController) GetAll() {
 func (this *UserController) LoginState() {
 	username, ok1 := this.GetSession("username").(string)
 	password, ok2 := this.GetSession("password").(string)
+	log.Println(username, password)
 	if ok, u := models.CanLogin(username, password); ok1 && ok2 && ok {
 		this.Data["json"] = map[string]interface{}{
 			"code":     0,
 			"username": username,
 			"profile": map[string]interface{}{
-				"username": u.Username,
-				"role":     u.Role,
-				"lastTime": u.LastLogin,
-				"lastLoc":  u.LastLoc,
+				"username":           u.Username,
+				"role":               u.Role,
+				"lastTime":           u.LastLogin,
+				"lastLoc":            u.LastLoc,
+				"associated_teacher": u.AssociatedTeacher.Id,
 			},
 		}
 	} else {

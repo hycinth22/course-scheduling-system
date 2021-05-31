@@ -46,7 +46,9 @@ func main() {
 		return
 	}
 	//log.SetOutput(f)
-	for i := 0; i < 100; i++ {
+	var total time.Duration
+	const times = 20
+	for i := 0; i < times; i++ {
 		fmt.Fprintln(file, i, ":")
 		begin := time.Now()
 		result, score := scheduling.GenerateSchedule(&scheduling.Params{
@@ -64,6 +66,8 @@ func main() {
 		}
 		end := time.Now()
 		costTime := end.Sub(begin)
+		total += costTime
 		fmt.Fprintln(file, i, score, costTime)
 	}
+	fmt.Fprintln(file, "avg", total/times)
 }

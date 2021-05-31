@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	dataDir              = "./dev/data/"
+	dataDir              = "./dev/testdata1/"
 	excelCourse          = dataDir + "/course.xls"
 	excelTeacher         = dataDir + "/teacher.xls"
 	excelInstruct        = dataDir + "/instruct.xls"

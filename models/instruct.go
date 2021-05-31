@@ -62,6 +62,19 @@ func ImportInstruct(batch []*Instruct) error {
 	return nil
 }
 
+func ListInstructsForTeacher(offset, limit int, semester string, teacher *Teacher) ([]*Instruct, int) {
+	var r []*Instruct
+	num, err := o.QueryTable("instruct").RelatedSel().Filter("semester_id", semester).Filter("teacher_id", teacher.Id).Offset(offset).Limit(limit).All(&r)
+	if err != nil {
+		log.Printf("Returned Rows Num: %d, %v\n", num, err)
+	}
+	cnt, err := o.QueryTable("instruct").Filter("semester_id", semester).Filter("teacher_id", teacher.Id).Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+	}
+	return r, int(cnt)
+}
+
 func ListInstructs(offset, limit int, semester string) ([]*Instruct, int) {
 	var r []*Instruct
 

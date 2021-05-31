@@ -7,6 +7,7 @@ import (
 
 	"courseScheduling/excel"
 	"courseScheduling/models"
+	"courseScheduling/session"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -26,19 +27,32 @@ func (this *InstructController) List() {
 		log.Println(err)
 	}
 	var (
-		courses []*models.Instruct
-		total   int
+		instructs []*models.Instruct
+		total     int
 	)
-	if query.Search == "" {
-		courses, total = models.ListInstructs(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Semester)
+	user, err := session.GetCurrentUser(&this.Controller)
+	if err != nil {
+		log.Println(err)
+	}
+	if err == nil && user.Role == "teacher" {
+		if user.AssociatedTeacher != nil {
+			instructs, total = models.ListInstructsForTeacher(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Semester, user.AssociatedTeacher)
+		} else {
+			instructs = []*models.Instruct{}
+			total = 0
+		}
 	} else {
-		courses, total = models.SearchInstructs(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Search, query.Semester)
+		if query.Search == "" {
+			instructs, total = models.ListInstructs(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Semester)
+		} else {
+			instructs, total = models.SearchInstructs(getOffset(query.PageIndex, query.PageSize), query.PageSize, query.Search, query.Semester)
+		}
 	}
 	this.Data["json"] = map[string]interface{}{
-		"list":      courses,
+		"list":      instructs,
 		"pageTotal": total,
 	}
-	err := this.ServeJSON()
+	err = this.ServeJSON()
 	if err != nil {
 		log.Println(err)
 		return

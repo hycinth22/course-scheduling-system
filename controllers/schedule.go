@@ -442,3 +442,20 @@ func (this *ScheduleController) GetEvaluatorList() {
 		return
 	}
 }
+
+// @router /selected [get]
+func (this *ScheduleController) GetSelected() {
+	models.GlobalConfig.RLock()
+	sem := models.GlobalConfig.SelectedSemester
+	sch := models.GlobalConfig.SelectedSchedule
+	models.GlobalConfig.RUnlock()
+	this.Data["json"] = map[string]interface{}{
+		"selected_semester": sem,
+		"selected_schedule": sch,
+	}
+	err := this.ServeJSON()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+}

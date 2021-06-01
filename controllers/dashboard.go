@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"courseScheduling/models"
+	"github.com/beego/beego/v2/client/orm"
 	"github.com/beego/beego/v2/server/web"
 	"github.com/montanaflynn/stats"
 )
@@ -49,94 +50,108 @@ func (c *DashboardController) GetSummary() {
 		log.Println(err)
 		return
 	}
-	sch, err := models.GetSchedule(scheduleID)
-	if err != nil {
-		return
-	}
-	view, _, err := getScheduleGroupView(scheduleID)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	var tlessons []float64
-	for _, teacherLessons := range view.ByTeacherPersonal {
-		cnt := 0
-		for _, r := range teacherLessons {
-			for _, t := range r {
-				if t != nil {
-					cnt++
+	var (
+		tavgLessons, tavgLessonsP float64
+		cavgLessons, cavgLessonsP float64
+		czusage                   float64
+	)
+	if scheduleID != 0 {
+		sch, err := models.GetSchedule(scheduleID)
+		if err == orm.ErrNoRows {
+			goto out
+		}
+		if err != nil {
+			return
+		}
+		view, _, err := getScheduleGroupView(scheduleID)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		var tlessons []float64
+		for _, teacherLessons := range view.ByTeacherPersonal {
+			cnt := 0
+			for _, r := range teacherLessons {
+				for _, t := range r {
+					if t != nil {
+						cnt++
+					}
+				}
+			}
+			tlessons = append(tlessons, float64(cnt))
+		}
+		tavgLessons, err = stats.Mean(tlessons)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		var clessons []float64
+		for _, clazzLessons := range view.ByClazz {
+			cnt := 0
+			for _, r := range clazzLessons {
+				for _, t := range r {
+					if t != nil {
+						cnt++
+					}
+				}
+			}
+			clessons = append(clessons, float64(cnt))
+		}
+		cavgLessons, err = stats.Mean(clessons)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		allclazzroom, err := models.AllClazzroom()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		clazzroomflag := make(map[clazzroomuse]bool, len(allclazzroom))
+		for _, clazzLessons := range view.ByClazz {
+			for _, r := range clazzLessons {
+				for _, t := range r {
+					if t != nil {
+						clazzroomflag[clazzroomuse{
+							clazzroom: t.Clazzroom.Id,
+							timespan:  t.TimespanId,
+						}] = true
+					}
 				}
 			}
 		}
-		tlessons = append(tlessons, float64(cnt))
-	}
-	tavgLessons, err := stats.Mean(tlessons)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	var clessons []float64
-	for _, clazzLessons := range view.ByClazz {
-		cnt := 0
-		for _, r := range clazzLessons {
-			for _, t := range r {
-				if t != nil {
-					cnt++
+		cntUnusedClazzroom := 0
+		totalCTD := 0
+		for _, c := range allclazzroom {
+			for timespan := 1; timespan <= sch.UseTimespan; timespan++ {
+				for dayofweek := 1; dayofweek <= 5; dayofweek++ {
+					totalCTD++
+					if !clazzroomflag[clazzroomuse{
+						clazzroom: c.Id,
+						timespan:  timespan,
+					}] {
+						cntUnusedClazzroom++
+					}
 				}
 			}
 		}
-		clessons = append(clessons, float64(cnt))
+		czusage = (1.0 - float64(cntUnusedClazzroom)/float64(totalCTD)) * 100
+		tavgLessonsP = tavgLessons / float64(5*sch.UseTimespan) * 100
+		cavgLessonsP = cavgLessons / float64(5*sch.UseTimespan) * 100
 	}
-	cavgLessons, err := stats.Mean(clessons)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	allclazzroom, err := models.AllClazzroom()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	clazzroomflag := make(map[clazzroomuse]bool, len(allclazzroom))
-	for _, clazzLessons := range view.ByClazz {
-		for _, r := range clazzLessons {
-			for _, t := range r {
-				if t != nil {
-					clazzroomflag[clazzroomuse{
-						clazzroom: t.Clazzroom.Id,
-						timespan:  t.TimespanId,
-					}] = true
-				}
-			}
-		}
-	}
-	cntUnusedClazzroom := 0
-	totalCTD := 0
-	for _, c := range allclazzroom {
-		for timespan := 1; timespan <= sch.UseTimespan; timespan++ {
-			for dayofweek := 1; dayofweek <= 5; dayofweek++ {
-				totalCTD++
-				if !clazzroomflag[clazzroomuse{
-					clazzroom: c.Id,
-					timespan:  timespan,
-				}] {
-					cntUnusedClazzroom++
-				}
-			}
-		}
-	}
+out:
 	c.Data["json"] = map[string]interface{}{
 		"semesterInfo": map[string]interface{}{
 			"progress": map[string]interface{}{
 				"cur": weekno, "total": semester.Weeks,
 			},
-			"clazzroom_usage": (1.0 - float64(cntUnusedClazzroom)/float64(totalCTD)) * 100,
+			"clazzroom_usage": czusage,
 			"teachersStats": map[string]interface{}{
-				"percentage": tavgLessons / float64(5*sch.UseTimespan) * 100,
+				"percentage": tavgLessonsP,
 				"avgLessons": tavgLessons,
 			},
 			"studentStats": map[string]interface{}{
-				"percentage": cavgLessons / float64(5*sch.UseTimespan) * 100,
+				"percentage": cavgLessonsP,
 				"avgLessons": cavgLessons,
 			},
 		},

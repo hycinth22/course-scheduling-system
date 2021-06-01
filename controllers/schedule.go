@@ -132,6 +132,11 @@ func (this *ScheduleController) DeleteAllScheduleInSemester() {
 		this.Ctx.Output.SetStatus(400)
 		return
 	}
+	models.GlobalConfig.Lock()
+	if models.GlobalConfig.SelectedSemester == semesterDate {
+		models.GlobalConfig.SelectedSchedule = 0
+	}
+	models.GlobalConfig.Unlock()
 	schs, err := models.GetSchedulesInSemester(semesterDate)
 	if err != nil {
 		this.Data["json"] = err.Error()

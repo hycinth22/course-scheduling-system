@@ -306,6 +306,33 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"],
 		beego.ControllerComments{
+			Method:           "ImportFromExcel",
+			Router:           "/excel",
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"],
+		beego.ControllerComments{
+			Method:           "Put",
+			Router:           "/instructed_clazzes",
+			AllowHTTPMethods: []string{"put"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"],
+		beego.ControllerComments{
+			Method:           "ImportdInstructClazzesFromExcel",
+			Router:           "/instructed_clazzes/excel",
+			AllowHTTPMethods: []string{"post"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:InstructController"],
+		beego.ControllerComments{
 			Method:           "List",
 			Router:           "/list",
 			AllowHTTPMethods: []string{"get"},
@@ -387,6 +414,15 @@ func init() {
 
 	beego.GlobalControllerRouter["courseScheduling/controllers:ScheduleController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ScheduleController"],
 		beego.ControllerComments{
+			Method:           "GetEvaluatorList",
+			Router:           "/evaluator_list",
+			AllowHTTPMethods: []string{"get"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:ScheduleController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ScheduleController"],
+		beego.ControllerComments{
 			Method:           "NewSchedule",
 			Router:           "/new",
 			AllowHTTPMethods: []string{"get"},
@@ -399,6 +435,15 @@ func init() {
 			Method:           "SelectSchedule",
 			Router:           "/selected",
 			AllowHTTPMethods: []string{"put"},
+			MethodParams:     param.Make(),
+			Filters:          nil,
+			Params:           nil})
+
+	beego.GlobalControllerRouter["courseScheduling/controllers:ScheduleController"] = append(beego.GlobalControllerRouter["courseScheduling/controllers:ScheduleController"],
+		beego.ControllerComments{
+			Method:           "GetSelected",
+			Router:           "/selected",
+			AllowHTTPMethods: []string{"get"},
 			MethodParams:     param.Make(),
 			Filters:          nil,
 			Params:           nil})

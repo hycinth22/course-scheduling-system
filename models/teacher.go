@@ -119,3 +119,11 @@ func AllTeachersInColleges(coll *College) (r []*Teacher, err error) {
 	}
 	return r, err
 }
+
+func CountTeachers() (int64, error) {
+	cnt, err := o.QueryTable("teacher").Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+	}
+	return cnt, err
+}

@@ -16,6 +16,7 @@ func init() {
 		web.NSNamespace("/clazzroom", web.NSInclude(&controllers.ClazzroomController{})),
 		web.NSNamespace("/college", web.NSInclude(&controllers.CollegeController{})),
 		web.NSNamespace("/course", web.NSInclude(&controllers.CourseController{})),
+		web.NSNamespace("/dashboard", web.NSInclude(&controllers.DashboardController{})),
 		web.NSNamespace("/dept", web.NSInclude(&controllers.DepartmentController{})),
 		web.NSNamespace("/instruct", web.NSInclude(&controllers.InstructController{})),
 		web.NSNamespace("/schedule", web.NSInclude(&controllers.ScheduleController{})),

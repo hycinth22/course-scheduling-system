@@ -111,3 +111,11 @@ func SearchInstructs(offset, limit int, search string, semester string) ([]*Inst
 	}
 	return r, int(cnt)
 }
+
+func CountInstructs() (int64, error) {
+	cnt, err := o.QueryTable("instruct").Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+	}
+	return cnt, err
+}

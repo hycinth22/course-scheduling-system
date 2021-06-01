@@ -24,6 +24,15 @@ func AllSemester() ([]*Semester, error) {
 	return r, err
 }
 
+func GetSemester(startDate string) (*Semester, error) {
+	s := &Semester{StartDate: startDate}
+	err := o.Read(s)
+	if err != nil {
+		log.Printf("GetSemester Err: %v\n", err)
+	}
+	return s, err
+}
+
 func AddSemester(c Semester) error {
 	_, err := o.Insert(&c)
 	if err != nil {

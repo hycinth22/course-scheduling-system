@@ -121,3 +121,11 @@ func SearchClazzes(offset, limit int, search string) (r []*Clazz, total int) {
 	}
 	return r, int(cnt)
 }
+
+func CountClazzes() (int64, error) {
+	cnt, err := o.QueryTable("clazz").Count()
+	if err != nil {
+		log.Printf("Rows Cnt: %d, %v\n", cnt, err)
+	}
+	return cnt, err
+}

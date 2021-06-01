@@ -40,7 +40,6 @@ func CanLogin(username, password string) (bool, *User) {
 func UpdateLogin(u *User, loginTime time.Time, loginLocation string) error {
 	u.LastLogin = loginTime
 	u.LastLoc = loginLocation
-
 	_, err := o.Update(u, "LastLogin", "LastLoc")
 	if err != nil {
 		log.Println("login error", err)

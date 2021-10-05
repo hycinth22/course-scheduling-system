@@ -30,6 +30,7 @@ func (c *DashboardController) GetSummary() {
 	semester, err := models.GetSemester(semesterDate)
 	if err != nil {
 		log.Println(err)
+		c.Ctx.Output.SetStatus(500)
 		return
 	}
 	begin, err := time.Parse("2006/1/2", semester.StartDate)
@@ -38,16 +39,19 @@ func (c *DashboardController) GetSummary() {
 	cntInstructs, err := models.CountInstructs()
 	if err != nil {
 		log.Println(err)
+		c.Ctx.Output.SetStatus(500)
 		return
 	}
 	cntTeachers, err := models.CountTeachers()
 	if err != nil {
 		log.Println(err)
+		c.Ctx.Output.SetStatus(500)
 		return
 	}
 	cntClazzes, err := models.CountClazzes()
 	if err != nil {
 		log.Println(err)
+		c.Ctx.Output.SetStatus(500)
 		return
 	}
 	var (
@@ -66,6 +70,7 @@ func (c *DashboardController) GetSummary() {
 		view, _, err := getScheduleGroupView(scheduleID)
 		if err != nil {
 			log.Println(err)
+			c.Ctx.Output.SetStatus(500)
 			return
 		}
 		var tlessons []float64
@@ -83,6 +88,7 @@ func (c *DashboardController) GetSummary() {
 		tavgLessons, err = stats.Mean(tlessons)
 		if err != nil {
 			log.Println(err)
+			c.Ctx.Output.SetStatus(500)
 			return
 		}
 		var clessons []float64
@@ -100,11 +106,13 @@ func (c *DashboardController) GetSummary() {
 		cavgLessons, err = stats.Mean(clessons)
 		if err != nil {
 			log.Println(err)
+			c.Ctx.Output.SetStatus(500)
 			return
 		}
 		allclazzroom, err := models.AllClazzroom()
 		if err != nil {
 			log.Println(err)
+			c.Ctx.Output.SetStatus(500)
 			return
 		}
 		clazzroomflag := make(map[clazzroomuse]bool, len(allclazzroom))

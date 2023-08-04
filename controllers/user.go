@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"courseScheduling/auth"
 	"encoding/json"
 	"log"
 	"time"
@@ -43,9 +44,16 @@ func (this *UserController) Login() {
 				log.Println(err)
 			}
 		}()
-		err := session.SetCurrentUser(&this.Controller, u)
+		tokenString, err := auth.SignToken(u.Id)
 		if err != nil {
 			log.Println(err)
+			return
+		}
+		this.Ctx.SetCookie("token", tokenString)
+		err = session.SetCurrentUser(&this.Controller, u)
+		if err != nil {
+			log.Println(err)
+			return
 		}
 	} else if !ok && u != nil && u.Status != 0 {
 		this.Data["json"] = map[string]interface{}{

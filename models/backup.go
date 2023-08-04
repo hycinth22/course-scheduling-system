@@ -14,11 +14,11 @@ const backupDir = "./backup/"
 func ListBackup() []string {
 	var files []string
 	err := filepath.Walk(backupDir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() && path != backupDir {
-			return filepath.SkipDir
-		}
 		if info == nil {
 			return nil
+		}
+		if info.IsDir() && path != backupDir {
+			return filepath.SkipDir
 		}
 		if !info.IsDir() && filepath.Ext(info.Name()) == ".sql" {
 			files = append(files, info.Name())

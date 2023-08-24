@@ -7,6 +7,6 @@ var CORS = cors.Allow(&cors.Options{
 	AllowOrigins:     []string{"http://localhost", "http://localhost:8080"},
 	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 	AllowHeaders:     []string{"Authorization"},
-	ExposeHeaders:    []string{},
+	ExposeHeaders:    []string{"Content-length"},
 	AllowCredentials: true,
 })
